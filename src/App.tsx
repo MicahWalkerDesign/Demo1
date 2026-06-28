@@ -1,1179 +1,667 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 
 type Lang = 'es' | 'en';
-type Variant = 'portfolio' | 'internal' | 'marketing';
-
-type Route = {
-  view: 'home' | Variant;
-  lang: Lang;
-};
-
-const copy = {
-  es: {
-    brand: 'GESIEMES',
-    homeTitle: 'Tres formas de mostrar la marca.',
-    homeSubtitle:
-      'Elige el tipo de experiencia que quieres ver. Cada opción funciona en español e inglés y está pensada para un entorno hotelero real.',
-    homeCta: 'Explorar mockup',
-    backHome: 'Volver al inicio',
-    switchTo: 'EN',
-    switchLabel: 'Cambiar a inglés',
-    selectorTitle: 'Selecciona una ruta',
-    selectorBody:
-      'Tres mockups distintos para explicar el negocio, apoyar al equipo interno o captar nuevos hoteles.',
-    portfolioTitle: 'Portafolio puro',
-    portfolioLead:
-      'Una página centrada solo en lo que hacen: socorristas, animación infantil, fitness de grupo y entretenimiento para hoteles.',
-    portfolioSubtitle:
-      'Sin capas internas ni mensajes comerciales extra. La prioridad es mostrar valor visual y confianza.',
-    internalTitle: 'Portafolio + recursos internos',
-    internalLead:
-      'La misma base de portfolio, pero con herramientas para el equipo: turnos, recursos, listas y seguimiento operativo.',
-    internalSubtitle:
-      'Pensado para coordinar al personal de temporada con menos fricción y más visibilidad.',
-    marketingTitle: 'Portafolio + marketing',
-    marketingLead:
-      'Portfolio de servicio con bloques para captar nuevos hoteles y explicar la propuesta a decisores comerciales.',
-    marketingSubtitle:
-      'Orientado a vender mejor la temporada, las zonas y la cobertura por hotel.',
-    heroKicker: 'España · Hoteles · Verano',
-    portfolioStats: [
-      { value: '28', label: 'hoteles activos' },
-      { value: '4', label: 'servicios clave' },
-      { value: '100%', label: 'en temporada' },
-    ],
-    internalStats: [
-      { value: '14', label: 'turnos visibles' },
-      { value: '6', label: 'recursos internos' },
-      { value: '24/7', label: 'soporte operativo' },
-    ],
-    marketingStats: [
-      { value: '3', label: 'zonas objetivo' },
-      { value: '12', label: 'argumentos comerciales' },
-      { value: '1', label: 'CTA principal' },
-    ],
-    sections: {
-      portfolio: {
-        one: 'Socorristas acuáticos',
-        two: 'Animación infantil y familiar',
-        three: 'Fitness de grupo',
-        four: 'Música y entretenimiento',
-        callout:
-          'La página debe sentirse como una vitrina editorial de verano: clara, fresca y con prueba visual real.',
-      },
-      internal: {
-        one: 'Horario semanal',
-        two: 'Checklists de apertura',
-        three: 'Incidencias y cobertura',
-        four: 'Material de onboarding',
-        callout:
-          'Una capa interna con acceso rápido a lo que el equipo necesita para operar mejor cada día.',
-      },
-      marketing: {
-        one: 'Captación de hoteles',
-        two: 'Campañas por región',
-        three: 'Casos y resultados',
-        four: 'Landing de contacto',
-        callout:
-          'Más foco comercial, más urgencia y una narrativa pensada para abrir conversaciones con nuevos clientes.',
-      },
-    },
-    panels: {
-      intro: 'Vitrina principal',
-      support: 'Bloque secundario',
-      footer: 'Hecho para móvil y escritorio',
-    },
-    card: 'Abrir experiencia',
-  },
-  en: {
-    brand: 'GESIEMES',
-    homeTitle: 'Three ways to present the brand.',
-    homeSubtitle:
-      'Choose the experience you want to see. Each option works in English and Spanish and is shaped for a real hotel context.',
-    homeCta: 'Open mockup',
-    backHome: 'Back home',
-    switchTo: 'ES',
-    switchLabel: 'Switch to Spanish',
-    selectorTitle: 'Choose a route',
-    selectorBody:
-      'Three different mockups to showcase the business, support the internal team, or win new hotels.',
-    portfolioTitle: 'Pure portfolio',
-    portfolioLead:
-      'A page focused only on what they do: lifeguards, children’s animation, group fitness, and hotel entertainment.',
-    portfolioSubtitle:
-      'No internal layers, no extra sales messaging. The priority is to show visual value and trust.',
-    internalTitle: 'Portfolio + internal resources',
-    internalLead:
-      'The same portfolio base, but with tools for the team: shifts, resources, checklists, and operational tracking.',
-    internalSubtitle:
-      'Designed to coordinate seasonal staff with less friction and better visibility.',
-    marketingTitle: 'Portfolio + marketing',
-    marketingLead:
-      'A service portfolio with blocks focused on acquiring new hotels and explaining the offer to commercial decision-makers.',
-    marketingSubtitle:
-      'Built to sell the season, the regions, and the coverage hotel by hotel.',
-    heroKicker: 'Spain · Hotels · Summer',
-    portfolioStats: [
-      { value: '28', label: 'active hotels' },
-      { value: '4', label: 'core services' },
-      { value: '100%', label: 'in season' },
-    ],
-    internalStats: [
-      { value: '14', label: 'visible shifts' },
-      { value: '6', label: 'internal tools' },
-      { value: '24/7', label: 'ops support' },
-    ],
-    marketingStats: [
-      { value: '3', label: 'target regions' },
-      { value: '12', label: 'sales angles' },
-      { value: '1', label: 'primary CTA' },
-    ],
-    sections: {
-      portfolio: {
-        one: 'Lifeguards',
-        two: 'Children and family animation',
-        three: 'Group fitness',
-        four: 'Music and entertainment',
-        callout:
-          'The page should feel like a summer editorial showcase: clear, fresh, and backed by real visuals.',
-      },
-      internal: {
-        one: 'Weekly rota',
-        two: 'Opening checklists',
-        three: 'Incidents and coverage',
-        four: 'Onboarding material',
-        callout:
-          'An internal layer with fast access to everything the team needs to operate better every day.',
-      },
-      marketing: {
-        one: 'Hotel acquisition',
-        two: 'Regional campaigns',
-        three: 'Cases and results',
-        four: 'Contact landing page',
-        callout:
-          'More commercial focus, more urgency, and a narrative designed to start conversations with new clients.',
-      },
-    },
-    panels: {
-      intro: 'Primary showcase',
-      support: 'Secondary layer',
-      footer: 'Built for mobile and desktop',
-    },
-    card: 'Open experience',
-  },
-} as const;
-
-const routes: Record<Variant, { es: string; en: string }> = {
-  portfolio: {
-    es: 'Portfolio puro',
-    en: 'Pure portfolio',
-  },
-  internal: {
-    es: 'Portfolio + recursos internos',
-    en: 'Portfolio + internal resources',
-  },
-  marketing: {
-    es: 'Portfolio + marketing',
-    en: 'Portfolio + marketing',
-  },
-};
-
-const routeMeta: Record<
-  Variant,
-  {
-    accent: string;
-    glow: string;
-    shape: string;
-  }
-> = {
-  portfolio: {
-    accent: '#EB9035',
-    glow: 'rgba(235, 144, 53, 0.18)',
-    shape: 'linear-gradient(135deg, rgba(235,144,53,0.18), rgba(50,129,188,0.12))',
-  },
-  internal: {
-    accent: '#A1B03B',
-    glow: 'rgba(161, 176, 59, 0.20)',
-    shape: 'linear-gradient(135deg, rgba(161,176,59,0.18), rgba(69,79,100,0.12))',
-  },
-  marketing: {
-    accent: '#3281BC',
-    glow: 'rgba(50,129,188,0.18)',
-    shape: 'linear-gradient(135deg, rgba(50,129,188,0.18), rgba(169,45,79,0.12))',
-  },
-};
 
 const asset = (filename: string) => `${import.meta.env.BASE_URL}assets/gesiemes/${filename}`;
 
 const media = {
   logo: asset('logo.png'),
   pool: asset('swimming-pool.jpg'),
-  poolAlt: asset('lifeguard-2.jpg'),
   lifeguard: asset('lifeguard-1.jpg'),
+  lifeguardAlt: asset('lifeguard-2.jpg'),
   hotel: asset('hotel.jpg'),
-  magician: asset('magician.jpg'),
+  entertainment: asset('magician.jpg'),
   contact: asset('contact.jpg'),
-  coding: asset('coding-icon.jpg'),
+  aqua: asset('aqua-fitness.jpg'),
 } as const;
 
-function parseRoute(): Route {
-  const hash = window.location.hash.replace(/^#/, '') || '/';
-  const [path, queryString] = hash.split('?');
-  const params = new URLSearchParams(queryString ?? '');
-  const lang = params.get('lang') === 'en' ? 'en' : 'es';
+const content = {
+  es: {
+    nav: ['Servicios', 'Cobertura', 'Nosotros', 'Empleo', 'Contacto'],
+    proposal: 'Solicitar propuesta',
+    heroTitle: 'Experiencias que los huéspedes recuerdan',
+    heroBody:
+      'Equipos cualificados para hoteles y resorts: seguridad acuática, animación, deporte y entretenimiento durante toda la temporada.',
+    servicesCta: 'Ver servicios',
+    customCta: 'Cuéntanos qué necesitas',
+    proofHotels: 'hoteles en temporada',
+    proofServices: 'servicios especializados',
+    servicesTitle: 'Todo lo que tu hotel necesita para activar el verano',
+    servicesBody:
+      'Explora cada servicio para conocer perfiles, coberturas y opciones de contratación. Adaptamos el equipo al ritmo real de cada establecimiento.',
+    coverageTitle: 'Cobertura real, hotel a hotel',
+    coverageBody:
+      'No trabajamos con una solución genérica. Empezamos por entender instalaciones, ocupación, horarios y perfil de huésped para dimensionar cada servicio.',
+    coverageIntro:
+      'Desde nuestra base en Salou coordinamos personal cualificado para hoteles, resorts y complejos turísticos en España.',
+    processTitle: 'Así construimos cada cobertura',
+    process: [
+      ['01', 'Diagnóstico', 'Revisamos espacios, horarios, aforo, calendario y necesidades específicas del hotel.'],
+      ['02', 'Selección y planificación', 'Asignamos perfiles adecuados, definimos turnos y dejamos claros los responsables y protocolos.'],
+      ['03', 'Seguimiento', 'Mantenemos comunicación directa para resolver incidencias, refuerzos y cambios de ocupación.'],
+    ],
+    modesTitle: 'Opciones de cobertura',
+    modes: [
+      ['Temporada completa', 'Equipos estables durante los meses de mayor actividad.'],
+      ['Refuerzos puntuales', 'Fines de semana, eventos y picos de ocupación.'],
+      ['Aperturas y cierres', 'Apoyo al inicio o final de temporada.'],
+      ['Programas especiales', 'Actividades o espectáculos diseñados para una necesidad concreta.'],
+    ],
+    aboutTitle: 'Personas preparadas. Hoteles mejor atendidos.',
+    aboutBody:
+      'GESIEMES proporciona personal cualificado y servicios para hoteles, resorts, complejos turísticos y centros de ocio. Más de 15 años de experiencia respaldan una forma de trabajar cercana, flexible y orientada al huésped.',
+    quoteTitle: 'Lo que una buena colaboración debe sentirse',
+    quoteNote: 'Ejemplos de valoración para sustituir por testimonios verificados del cliente.',
+    quotes: [
+      [
+        '“Durante la temporada necesitamos respuestas rápidas. Tener una persona de contacto y los turnos bien definidos nos da mucha tranquilidad.”',
+        'Dirección de hotel',
+      ],
+      [
+        '“El equipo se integró con recepción y mantenimiento desde el primer día. Cuando cambió la ocupación, reorganizamos la cobertura sin complicaciones.”',
+        'Responsable de operaciones',
+      ],
+      [
+        '“Las actividades tienen ritmo, pero también se adaptan a cada familia. Los huéspedes saben qué ocurre y el equipo del hotel no tiene que perseguir información.”',
+        'Resort familiar · Costa Daurada',
+      ],
+    ],
+    customTitle: '¿Tienes algo diferente en mente?',
+    customBody:
+      'Si tu hotel necesita un perfil, actividad o formato que no aparece en la lista, cuéntanoslo. Podemos estudiar una propuesta a medida para la temporada.',
+    careersTitle: 'Trabaja con nosotros',
+    careersBody:
+      'Buscamos personas responsables, comunicativas y con ganas de crear buenas experiencias. Envíanos tu candidatura para próximos equipos de temporada.',
+    roles: ['Socorristas', 'Animadores/as', 'Monitores/as de fitness', 'Artistas y grupos'],
+    apply: 'Enviar candidatura',
+    applicationTitle: 'Candidatura de temporada',
+    contactTitle: 'Hablemos de tu próxima temporada',
+    contactBody:
+      'Cuéntanos qué tipo de hotel tienes, fechas aproximadas y qué servicio necesitas. Te responderemos para entender el proyecto.',
+    send: 'Enviar solicitud',
+    sent: 'Solicitud preparada. En una web conectada, se enviaría al equipo comercial.',
+    applicationSent: 'Candidatura preparada. En una web conectada, se enviaría al equipo de selección.',
+    imprint: 'Información legal',
+    privacy:
+      'Responsable: GESIEMES 2017, SL. Finalidad: atender su solicitud y mantener una relación comercial. Puede ejercer sus derechos de acceso, rectificación, supresión, limitación y oposición escribiendo a info@gesiemes.com.',
+  },
+  en: {
+    nav: ['Services', 'Coverage', 'About', 'Careers', 'Contact'],
+    proposal: 'Request a proposal',
+    heroTitle: 'Experiences guests remember',
+    heroBody:
+      'Qualified teams for hotels and resorts: aquatic safety, animation, sport, and entertainment throughout the season.',
+    servicesCta: 'View services',
+    customCta: 'Tell us what you need',
+    proofHotels: 'hotels in season',
+    proofServices: 'specialist services',
+    servicesTitle: 'Everything your hotel needs to bring summer to life',
+    servicesBody:
+      'Explore each service to understand profiles, coverage, and hiring options. We adapt the team to the real rhythm of every property.',
+    coverageTitle: 'Real coverage, hotel by hotel',
+    coverageBody:
+      'We do not use a generic solution. We start by understanding facilities, occupancy, schedules, and guest profile to size every service correctly.',
+    coverageIntro:
+      'From our base in Salou, we coordinate qualified staff for hotels, resorts, and tourism complexes across Spain.',
+    processTitle: 'How we build each assignment',
+    process: [
+      ['01', 'Assessment', 'We review spaces, schedules, capacity, calendar, and each hotel’s specific requirements.'],
+      ['02', 'Selection and planning', 'We assign suitable profiles, define shifts, and clarify responsibilities and protocols.'],
+      ['03', 'Follow-up', 'We stay in direct contact to handle incidents, reinforcements, and occupancy changes.'],
+    ],
+    modesTitle: 'Coverage options',
+    modes: [
+      ['Full season', 'Stable teams throughout the busiest months.'],
+      ['Targeted reinforcement', 'Weekends, events, and occupancy peaks.'],
+      ['Opening and closing', 'Support at the start or end of the season.'],
+      ['Special programmes', 'Activities or shows designed for a specific requirement.'],
+    ],
+    aboutTitle: 'Prepared people. Better-served hotels.',
+    aboutBody:
+      'GESIEMES provides qualified staff and services for hotels, resorts, tourism complexes, and leisure centres. More than 15 years of experience support a close, flexible, guest-focused way of working.',
+    quoteTitle: 'What a strong partnership should feel like',
+    quoteNote: 'Sample review copy to replace with verified client testimonials.',
+    quotes: [
+      [
+        '“During the season we need quick answers. Having one point of contact and clearly defined shifts gives us real peace of mind.”',
+        'Hotel management',
+      ],
+      [
+        '“The team integrated with reception and maintenance from day one. When occupancy changed, we reorganised coverage without complications.”',
+        'Operations manager',
+      ],
+      [
+        '“Activities have energy but still adapt to each family. Guests know what is happening, and our hotel team does not have to chase information.”',
+        'Family resort · Costa Daurada',
+      ],
+    ],
+    customTitle: 'Have something different in mind?',
+    customBody:
+      'If your hotel needs a profile, activity, or format that is not listed, tell us. We can explore a tailored proposal for the season.',
+    careersTitle: 'Work with us',
+    careersBody:
+      'We look for responsible, communicative people who want to create great experiences. Send your application for upcoming seasonal teams.',
+    roles: ['Lifeguards', 'Activity leaders', 'Fitness instructors', 'Artists and groups'],
+    apply: 'Send application',
+    applicationTitle: 'Seasonal application',
+    contactTitle: 'Let’s talk about your next season',
+    contactBody:
+      'Tell us about your hotel, approximate dates, and the service you need. We will reply to understand the project.',
+    send: 'Send request',
+    sent: 'Request prepared. On a connected website, it would be sent to the commercial team.',
+    applicationSent: 'Application prepared. On a connected website, it would be sent to recruitment.',
+    imprint: 'Legal information',
+    privacy:
+      'Controller: GESIEMES 2017, SL. Purpose: to respond to your request and maintain a commercial relationship. You may exercise your rights of access, rectification, erasure, restriction, and objection by writing to info@gesiemes.com.',
+  },
+} as const;
 
-  if (path === '/' || path === '') {
-    return { view: 'home', lang };
-  }
-  if (path.includes('internal')) {
-    return { view: 'internal', lang };
-  }
-  if (path.includes('marketing')) {
-    return { view: 'marketing', lang };
-  }
-  return { view: 'portfolio', lang };
+function getServices(lang: Lang) {
+  return lang === 'es'
+    ? [
+        {
+          title: 'Socorrismo acuático',
+          intro: 'Seguridad profesional para piscinas, zonas acuáticas y espacios de ocio.',
+          image: media.lifeguard,
+          points: [
+            'Personal con titulación aplicable y experiencia en entornos turísticos.',
+            'Planificación de turnos según horarios, aforo y ocupación.',
+            'Protocolos de prevención, vigilancia y respuesta ante incidencias.',
+            'Cobertura para hoteles, resorts, parques acuáticos y centros de ocio.',
+            'Contratos de temporada, sustituciones o refuerzos en momentos de demanda.',
+          ],
+        },
+        {
+          title: 'Animación infantil y familiar',
+          intro: 'Programas de ocio que acompañan a familias y huéspedes durante toda la estancia.',
+          image: media.entertainment,
+          points: [
+            'Mini club, juegos, talleres y actividades adaptadas por edades.',
+            'Programación diurna y apoyo a eventos familiares.',
+            'Equipos comunicativos con experiencia en atención al huésped.',
+            'Calendarios ajustados al perfil, espacios y ritmo de cada hotel.',
+            'Coordinación con recepción, restauración y dirección de operaciones.',
+          ],
+        },
+        {
+          title: 'Aqua fitness y actividades deportivas',
+          intro: 'Bienestar, movimiento y participación con actividades accesibles para huéspedes.',
+          image: media.aqua,
+          points: [
+            'Aqua gym, movilidad, estiramientos y sesiones dirigidas.',
+            'Actividades de intensidad adaptable y enfoque inclusivo.',
+            'Monitores con preparación deportiva y trato cercano.',
+            'Programación semanal visible y fácil de comunicar al huésped.',
+            'Sesiones especiales para grupos, eventos o semanas temáticas.',
+          ],
+        },
+        {
+          title: 'Música, espectáculos y entretenimiento',
+          intro: 'Propuestas para noches, eventos y momentos especiales dentro del hotel.',
+          image: media.contact,
+          points: [
+            'Grupos musicales, artistas, shows y formatos de animación.',
+            'Selección según público, espacio, presupuesto y horario.',
+            'Programación puntual o calendario completo de temporada.',
+            'Coordinación técnica y operativa con el establecimiento.',
+            'Propuestas familiares, temáticas y para público adulto.',
+          ],
+        },
+      ]
+    : [
+        {
+          title: 'Aquatic lifeguarding',
+          intro: 'Professional safety for pools, aquatic areas, and leisure facilities.',
+          image: media.lifeguard,
+          points: [
+            'Staff with applicable qualifications and tourism-sector experience.',
+            'Shift planning based on opening hours, capacity, and occupancy.',
+            'Prevention, supervision, and incident-response protocols.',
+            'Coverage for hotels, resorts, water parks, and leisure centres.',
+            'Seasonal contracts, substitutions, or peak-demand reinforcement.',
+          ],
+        },
+        {
+          title: 'Children and family animation',
+          intro: 'Leisure programmes that accompany families and guests throughout their stay.',
+          image: media.entertainment,
+          points: [
+            'Mini club, games, workshops, and age-appropriate activities.',
+            'Daytime programming and support for family events.',
+            'Communicative teams experienced in guest care.',
+            'Schedules adapted to each hotel’s audience, spaces, and pace.',
+            'Coordination with reception, food service, and operations.',
+          ],
+        },
+        {
+          title: 'Aqua fitness and sport activities',
+          intro: 'Wellbeing, movement, and participation through accessible guest activities.',
+          image: media.aqua,
+          points: [
+            'Aqua gym, mobility, stretching, and instructor-led sessions.',
+            'Adaptable intensity and an inclusive approach.',
+            'Instructors with sporting knowledge and strong people skills.',
+            'A visible weekly programme that is easy to communicate.',
+            'Special sessions for groups, events, or themed weeks.',
+          ],
+        },
+        {
+          title: 'Music, shows, and entertainment',
+          intro: 'Programming for evenings, events, and special moments at the hotel.',
+          image: media.contact,
+          points: [
+            'Music groups, artists, shows, and animation formats.',
+            'Selection based on audience, space, budget, and schedule.',
+            'One-off programming or a complete seasonal calendar.',
+            'Technical and operational coordination with the property.',
+            'Family, themed, and adult-oriented proposals.',
+          ],
+        },
+      ];
 }
 
-function useRoute() {
-  const [route, setRoute] = useState<Route>(() => parseRoute());
-
-  useEffect(() => {
-    const onChange = () => setRoute(parseRoute());
-    window.addEventListener('hashchange', onChange);
-    window.addEventListener('popstate', onChange);
-    return () => {
-      window.removeEventListener('hashchange', onChange);
-      window.removeEventListener('popstate', onChange);
-    };
-  }, []);
-
-  return route;
-}
-
-function goTo(path: string) {
-  window.location.hash = path;
-}
-
-function toggleLang(current: Lang) {
-  return current === 'es' ? 'en' : 'es';
-}
-
-function buildPath(view: 'home' | Variant, lang: Lang) {
-  const base = view === 'home' ? '/' : `/${view}`;
-  return `${base}?lang=${lang}`;
+function scrollToId(id: string) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function App() {
-  const route = useRoute();
-  const lang = route.lang;
-  const t = copy[lang];
+  const [lang, setLang] = useState<Lang>('es');
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [careerOpen, setCareerOpen] = useState(false);
+  const [contactSent, setContactSent] = useState(false);
+  const [applicationSent, setApplicationSent] = useState(false);
+  const t = content[lang];
+  const services = getServices(lang);
 
   useEffect(() => {
     document.documentElement.lang = lang === 'es' ? 'es-ES' : 'en';
     document.title =
-      route.view === 'home'
-        ? `GESIEMES Demo1 | ${lang === 'es' ? 'Selector' : 'Selector'}`
-        : `GESIEMES Demo1 | ${routes[route.view][lang]}`;
-  }, [lang, route.view]);
+      lang === 'es'
+        ? 'GESIEMES | Servicios para hoteles y resorts'
+        : 'GESIEMES | Services for hotels and resorts';
+  }, [lang]);
+
+  const navTargets = ['services', 'coverage', 'about', 'careers', 'contact'];
+  const handleSubmit = (event: FormEvent<HTMLFormElement>, type: 'contact' | 'career') => {
+    event.preventDefault();
+    if (type === 'contact') setContactSent(true);
+    else setApplicationSent(true);
+  };
 
   return (
-    <div className="app-shell">
-      <Ambient />
-      {route.view === 'home' ? (
-        <header className="topbar topbar--home">
-          <button
-            className="brand"
-            type="button"
-            onClick={() => goTo(buildPath('home', lang))}
-            aria-label={lang === 'es' ? 'Volver al inicio' : 'Go home'}
-          >
-            <span className="brand-mark">
-              <img src={media.logo} alt="" />
-            </span>
-            <span className="brand-name">{t.brand}</span>
+    <div className="site-shell">
+      <header className="site-header">
+        <button className="brand" type="button" onClick={() => scrollToId('top')} aria-label="GESIEMES">
+          <img src={media.logo} alt="GESIEMES" />
+        </button>
+
+        <nav className="desktop-nav" aria-label={lang === 'es' ? 'Navegación principal' : 'Main navigation'}>
+          {t.nav.map((label, index) => (
+            <button key={label} type="button" onClick={() => scrollToId(navTargets[index])}>
+              {label}
+            </button>
+          ))}
+        </nav>
+
+        <div className="header-actions">
+          <div className="language-switch" aria-label="Language">
+            <button className={lang === 'es' ? 'is-active' : ''} type="button" onClick={() => setLang('es')}>
+              ES
+            </button>
+            <span>/</span>
+            <button className={lang === 'en' ? 'is-active' : ''} type="button" onClick={() => setLang('en')}>
+              EN
+            </button>
+          </div>
+          <button className="button button--primary header-cta" type="button" onClick={() => scrollToId('contact')}>
+            {t.proposal}
           </button>
-          <nav className="topnav" aria-label="Primary">
-            <button type="button" onClick={() => goTo(buildPath('portfolio', lang))}>
-              {lang === 'es' ? 'Portfolio' : 'Portfolio'}
-            </button>
-            <button type="button" onClick={() => goTo(buildPath('internal', lang))}>
-              {lang === 'es' ? 'Equipo' : 'Team'}
-            </button>
-            <button type="button" onClick={() => goTo(buildPath('marketing', lang))}>
-              {lang === 'es' ? 'Crecimiento' : 'Growth'}
+          <button
+            className="menu-toggle"
+            type="button"
+            aria-expanded={menuOpen}
+            aria-label={lang === 'es' ? 'Abrir menú' : 'Open menu'}
+            onClick={() => setMenuOpen((open) => !open)}
+          >
+            <span />
+            <span />
+          </button>
+        </div>
+
+        {menuOpen ? (
+          <nav className="mobile-nav" aria-label={lang === 'es' ? 'Navegación móvil' : 'Mobile navigation'}>
+            {t.nav.map((label, index) => (
+              <button
+                key={label}
+                type="button"
+                onClick={() => {
+                  scrollToId(navTargets[index]);
+                  setMenuOpen(false);
+                }}
+              >
+                {label}
+              </button>
+            ))}
+            <button
+              className="button button--primary"
+              type="button"
+              onClick={() => {
+                scrollToId('contact');
+                setMenuOpen(false);
+              }}
+            >
+              {t.proposal}
             </button>
           </nav>
-          <div className="topbar-actions">
-            <button
-              className="lang-toggle lang-toggle--light"
-              type="button"
-              onClick={() => goTo(buildPath(route.view, toggleLang(lang)))}
-              aria-label={t.switchLabel}
-            >
-              <span>{lang.toUpperCase()}</span>
-              <span>{t.switchTo}</span>
-            </button>
-            <button className="primary primary--small" type="button" onClick={() => goTo(buildPath('marketing', lang))}>
-              {lang === 'es' ? 'Solicitar propuesta' : 'Request proposal'}
-            </button>
-          </div>
-        </header>
-      ) : (
-        <header className="topbar">
-          <button
-            className="brand"
-            type="button"
-            onClick={() => goTo(buildPath('home', lang))}
-            aria-label={lang === 'es' ? 'Volver al inicio' : 'Go home'}
-          >
-            <span className="brand-mark">
-              <img src={media.logo} alt="" />
-            </span>
-            <span className="brand-name">{t.brand}</span>
-          </button>
-          <div className="topbar-actions">
-            <button className="ghost" type="button" onClick={() => goTo(buildPath('home', lang))}>
-              {t.backHome}
-            </button>
-            <button
-              className="lang-toggle"
-              type="button"
-              onClick={() => goTo(buildPath(route.view, toggleLang(lang)))}
-              aria-label={t.switchLabel}
-            >
-              <span>{lang.toUpperCase()}</span>
-              <span>{t.switchTo}</span>
-            </button>
-          </div>
-        </header>
-      )}
+        ) : null}
+      </header>
 
-      {route.view === 'home' ? (
-        <HomeView lang={lang} />
-      ) : (
-        <MockupView lang={lang} variant={route.view} />
-      )}
-    </div>
-  );
-}
-
-function HomeView({ lang }: { lang: Lang }) {
-  const t = copy[lang];
-
-  return (
-    <main className="home-page">
-      <section className="concept-hero">
-        <div className="concept-hero__copy">
-          <p className="kicker">{t.heroKicker}</p>
-          <h1>
-            {lang === 'es' ? (
-              <>
-                Hacemos que cada estancia sea <em>inolvidable</em>
-              </>
-            ) : (
-              <>
-                We make every stay <em>unforgettable</em>
-              </>
-            )}
-          </h1>
-          <p className="lede">
-            {lang === 'es'
-              ? 'Animación, deporte y bienestar para hoteles que buscan experiencias memorables y equipos fiables.'
-              : 'Animation, sport, and wellbeing for hotels that want memorable experiences and reliable teams.'}
-          </p>
-          <div className="hero-actions">
-            <button
-              className="primary"
-              type="button"
-              onClick={() => document.getElementById('options')?.scrollIntoView({ behavior: 'smooth' })}
-            >
-              {lang === 'es' ? 'Explorar las 3 propuestas' : 'Explore the 3 concepts'}
-            </button>
-            <button className="hero-link" type="button" onClick={() => goTo(buildPath('portfolio', lang))}>
-              {lang === 'es' ? 'Ver portfolio' : 'View portfolio'}
-              <span aria-hidden="true">↗</span>
-            </button>
+      <main id="top">
+        <section className="hero">
+          <img className="hero__image" src={media.pool} alt={lang === 'es' ? 'Piscina de un resort junto al mar' : 'Seaside resort pool'} />
+          <div className="hero__shade" />
+          <div className="hero__content">
+            <h1>{t.heroTitle}</h1>
+            <p>{t.heroBody}</p>
+            <div className="hero__actions">
+              <button className="button button--primary" type="button" onClick={() => scrollToId('services')}>
+                {t.servicesCta}
+              </button>
+              <button className="button button--outline-light" type="button" onClick={() => scrollToId('contact')}>
+                {t.proposal}
+              </button>
+            </div>
           </div>
-          <div className="hero-signals">
-            {[
-              lang === 'es' ? 'Equipos especializados' : 'Specialist teams',
-              lang === 'es' ? 'Seguridad y cumplimiento' : 'Safety and compliance',
-              lang === 'es' ? 'Cobertura en 28 hoteles' : 'Coverage across 28 hotels',
-              lang === 'es' ? 'Experiencias que generan valor' : 'Experiences that create value',
-            ].map((item) => (
-              <div className="hero-signal" key={item}>
-                <span className="hero-signal__icon" />
-                <span>{item}</span>
-              </div>
+        </section>
+
+        <section className="proof-strip" aria-label={lang === 'es' ? 'Cifras principales' : 'Key figures'}>
+          <div className="proof">
+            <strong>28</strong>
+            <span>{t.proofHotels}</span>
+          </div>
+          <div className="proof">
+            <strong>4</strong>
+            <span>{t.proofServices}</span>
+          </div>
+        </section>
+
+        <section className="services section" id="services">
+          <div className="section-heading section-heading--wide">
+            <h2>{t.servicesTitle}</h2>
+            <p>{t.servicesBody}</p>
+          </div>
+          <div className="service-accordion">
+            {services.map((service, index) => (
+              <details className="service-item" key={service.title} open={index === 0}>
+                <summary>
+                  <img src={service.image} alt="" />
+                  <span className="service-item__number">{String(index + 1).padStart(2, '0')}</span>
+                  <span className="service-item__summary">
+                    <strong>{service.title}</strong>
+                    <small>{service.intro}</small>
+                  </span>
+                  <span className="service-item__toggle" aria-hidden="true" />
+                </summary>
+                <div className="service-item__content">
+                  <div className="service-item__media">
+                    <img src={service.image} alt={service.title} />
+                  </div>
+                  <div className="service-item__details">
+                    <p>{service.intro}</p>
+                    <ul>
+                      {service.points.map((point) => (
+                        <li key={point}>{point}</li>
+                      ))}
+                    </ul>
+                    <button className="text-link" type="button" onClick={() => scrollToId('contact')}>
+                      {lang === 'es' ? 'Consultar este servicio' : 'Ask about this service'} <span>↗</span>
+                    </button>
+                  </div>
+                </div>
+              </details>
             ))}
           </div>
-        </div>
+        </section>
 
-        <div className="concept-hero__media">
-          <div className="concept-hero__showcase">
-            <div className="concept-hero__showcase-main">
-              <img src={media.pool} alt="" />
-              <div className="concept-hero__glass concept-hero__glass--anchor">
-                <img src={media.logo} alt="" />
-                <strong>{lang === 'es' ? '28 hoteles en verano' : '28 summer hotels'}</strong>
-                <span>{lang === 'es' ? 'Socorristas, animación y entretenimiento' : 'Lifeguards, animation, and entertainment'}</span>
+        <section className="coverage section" id="coverage">
+          <div className="coverage__intro">
+            <div className="section-heading">
+              <h2>{t.coverageTitle}</h2>
+              <p>{t.coverageBody}</p>
+            </div>
+            <div className="coverage__photo">
+              <img src={media.hotel} alt={lang === 'es' ? 'Hotel atendido durante la temporada' : 'Hotel served during the season'} />
+              <div className="coverage__photo-stat">
+                <strong>28</strong>
+                <span>{t.proofHotels}</span>
               </div>
             </div>
-            <div className="concept-hero__stack">
-              <article className="concept-hero__glass concept-hero__glass--photo">
-                <img src={media.lifeguard} alt="" />
-                <span>{lang === 'es' ? 'Cobertura segura' : 'Safe coverage'}</span>
-              </article>
-              <article className="concept-hero__glass concept-hero__glass--photo">
-                <img src={media.hotel} alt="" />
-                <span>{lang === 'es' ? 'Experiencia hotelera' : 'Hotel experience'}</span>
-              </article>
-              <article className="concept-hero__glass concept-hero__glass--label">
-                <img src={media.magician} alt="" />
-                <div>
-                  <strong>{lang === 'es' ? 'Entretenimiento' : 'Entertainment'}</strong>
-                  <span>{lang === 'es' ? 'Música, shows y equipos de animación' : 'Music, shows, and animation teams'}</span>
-                </div>
-              </article>
-            </div>
+            <p className="coverage__intro-copy">{t.coverageIntro}</p>
           </div>
-        </div>
-      </section>
 
-      <section className="selector-section" id="options">
-        <div className="selector-section__heading">
-          <p className="selector-eyebrow">{lang === 'es' ? 'Accede a tu espacio' : 'Access your space'}</p>
-          <h2>{lang === 'es' ? 'Elige tu ruta / Choose your path' : 'Choose your path / Elige tu ruta'}</h2>
-          <p>
-            {lang === 'es'
-              ? 'Tres espacios, un mismo objetivo: hacer crecer la experiencia en tu hotel.'
-              : 'Three spaces, one objective: grow the guest experience at your hotel.'}
-          </p>
-        </div>
-
-        <div className="selector-grid selector-grid--home">
-          {(Object.keys(routes) as Variant[]).map((variant, index) => (
-            <button
-              key={variant}
-              type="button"
-              className={`selector-card selector-card--${variant} selector-card--home`}
-              onClick={() => goTo(buildPath(variant, lang))}
-            >
-              <div className="selector-card__head">
-                <div className={`selector-card__badge selector-card__badge--${variant}`}>
-                  {variant === 'portfolio' ? '◻' : variant === 'internal' ? '◫' : '↗'}
-                </div>
-                <div>
-                  <div className="selector-card__eyebrow">
-                    {index + 1}. {lang === 'es' ? routes[variant].es : routes[variant].en}
+          <div className="coverage__process">
+            <h3>{t.processTitle}</h3>
+            <ol>
+              {t.process.map(([number, title, body]) => (
+                <li key={number}>
+                  <span>{number}</span>
+                  <div>
+                    <strong>{title}</strong>
+                    <p>{body}</p>
                   </div>
-                  <div className="selector-card__subeyebrow">
-                    {lang === 'es' ? labelsEs[variant] : labelsEn[variant]}
+                </li>
+              ))}
+            </ol>
+          </div>
+
+          <div className="coverage__modes">
+            <h3>{t.modesTitle}</h3>
+            <div className="coverage__mode-grid">
+              {t.modes.map(([title, body]) => (
+                <article key={title}>
+                  <span aria-hidden="true">●</span>
+                  <div>
+                    <strong>{title}</strong>
+                    <p>{body}</p>
                   </div>
-                </div>
-              </div>
-              <div className={`selector-card__preview selector-card__preview--${variant}`}>
-                {variant === 'portfolio' ? (
-                  <>
-                    <img src={media.pool} alt="" />
-                    <div className="selector-card__preview-chip">{lang === 'es' ? 'Portfolio visual' : 'Visual portfolio'}</div>
-                  </>
-                ) : variant === 'internal' ? (
-                  <>
-                    <img src={media.hotel} alt="" />
-                    <div className="preview-sidebar" />
-                    <div className="preview-grid">
-                      <span />
-                      <span />
-                      <span />
-                      <span />
-                    </div>
-                    <div className="selector-card__preview-chip selector-card__preview-chip--dark">
-                      {lang === 'es' ? 'Herramientas internas' : 'Internal tools'}
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <img src={media.contact} alt="" />
-                    <div className="preview-chart" />
-                    <div className="preview-map" />
-                    <div className="selector-card__preview-chip">{lang === 'es' ? 'Captación comercial' : 'Commercial growth'}</div>
-                  </>
-                )}
-              </div>
-              <p className="selector-card__body">
-                {variant === 'portfolio'
-                  ? lang === 'es'
-                    ? 'Explora quiénes somos, lo que hacemos y cómo se vive la experiencia.'
-                    : 'Explore who they are, what they do, and how the experience feels.'
-                  : variant === 'internal'
-                    ? lang === 'es'
-                      ? 'Accede a herramientas, calendarios, manuales y comunicaciones internas.'
-                      : 'Access tools, calendars, manuals, and internal communication.'
-                    : lang === 'es'
-                      ? 'Recursos y herramientas para captar nuevos hoteles y solicitudes de propuesta.'
-                      : 'Resources and tools to win new hotels and handle proposal requests.'}
-              </p>
-              <span className="selector-card__link">
-                {lang === 'es'
-                  ? variant === 'portfolio'
-                    ? 'Entrar al portafolio / Enter portfolio'
-                    : variant === 'internal'
-                      ? 'Entrar al área interna / Enter internal area'
-                      : 'Entrar a marketing / Enter marketing area'
-                  : variant === 'portfolio'
-                    ? 'Enter portfolio / Entrar al portafolio'
-                    : variant === 'internal'
-                      ? 'Enter internal area / Entrar al área interna'
-                      : 'Enter marketing area / Entrar a marketing'}
-              </span>
-            </button>
-          ))}
-        </div>
-      </section>
-    </main>
-  );
-}
-
-const labelsEs: Record<Variant, string> = {
-  portfolio: 'Solo vitrina, solo portfolio.',
-  internal: 'Añade recursos internos para el equipo.',
-  marketing: 'Añade una capa comercial para captar hoteles.',
-};
-
-const labelsEn: Record<Variant, string> = {
-  portfolio: 'Showcase only, no extra layers.',
-  internal: 'Add internal resources for the team.',
-  marketing: 'Add a commercial layer to win new hotels.',
-};
-
-function MockupView({ lang, variant }: { lang: Lang; variant: Variant }) {
-  const t = copy[lang];
-  const variantCopy = t.sections[variant];
-  const meta = routeMeta[variant];
-  const stagePhotos: Record<Variant, { main: string; secondary: string; tertiary: string; badge: string }> = {
-    portfolio: {
-      main: media.pool,
-      secondary: media.lifeguard,
-      tertiary: media.magician,
-      badge: media.logo,
-    },
-    internal: {
-      main: media.hotel,
-      secondary: media.poolAlt,
-      tertiary: media.lifeguard,
-      badge: media.coding,
-    },
-    marketing: {
-      main: media.contact,
-      secondary: media.hotel,
-      tertiary: media.pool,
-      badge: media.magician,
-    },
-  };
-  const stage = stagePhotos[variant];
-
-  return (
-    <main className="mockup-page">
-      <section className="mockup-hero">
-        <div className="mockup-hero__copy">
-          <p className="kicker">{t.heroKicker}</p>
-          <h1>{copy[lang][`${variant}Title` as const]}</h1>
-          <p className="lede">{copy[lang][`${variant}Lead` as const]}</p>
-          <p className="subtle">{copy[lang][`${variant}Subtitle` as const]}</p>
-          <div className="stat-row">
-            {(
-              copy[lang][`${variant}Stats` as const] as unknown as ReadonlyArray<{
-                value: string;
-                label: string;
-              }>
-            ).map(
-              (stat) => (
-                <div className="stat" key={stat.label}>
-                  <strong>{stat.value}</strong>
-                  <span>{stat.label}</span>
-                </div>
-              ),
-            )}
-          </div>
-        </div>
-
-        <div
-          className="mockup-visual"
-          style={{ ['--accent' as never]: meta.accent, ['--glow' as never]: meta.glow } as React.CSSProperties}
-        >
-          <div className="mockup-visual__top">
-            <span>{t.panels.intro}</span>
-            <span>{variant.toUpperCase()}</span>
-          </div>
-          <div className={`hero-art hero-art--${variant}`}>
-            <div className="hero-art__rail" style={{ background: meta.shape }}>
-              <img src={stage.main} alt="" />
-            </div>
-            <div className="hero-art__card hero-art__card--primary">
-              <div className="hero-art__eyebrow">{variant === 'portfolio' ? t.panels.intro : variant === 'internal' ? t.panels.support : t.panels.intro}</div>
-              <div className="hero-art__title">{variantCopy.one}</div>
-              <div className="hero-art__subtitle">{variantCopy.callout}</div>
-              <div className="hero-art__pill-row">
-                <span>{variantCopy.two}</span>
-                <span>{variantCopy.three}</span>
-              </div>
-            </div>
-            <div className="hero-art__stack">
-              <article className="hero-art__mini hero-art__mini--photo">
-                <img src={stage.secondary} alt="" />
-                <span>{variantCopy.two}</span>
-              </article>
-              <article className="hero-art__mini hero-art__mini--photo">
-                <img src={stage.tertiary} alt="" />
-                <span>{variantCopy.three}</span>
-              </article>
-              <article className="hero-art__mini hero-art__mini--badge">
-                <img src={stage.badge} alt="" />
-                <span>{variantCopy.four}</span>
-              </article>
-            </div>
-          </div>
-          <div className="mockup-visual__footer">
-            <span>{t.panels.footer}</span>
-            <a href={`#/${variant}?lang=${lang}`}>{lang === 'es' ? 'Abrir vista completa' : 'Open full view'}</a>
-          </div>
-        </div>
-      </section>
-
-      <section className="section-band">
-        <div className="section-band__heading">
-          <h2>{variant === 'portfolio' ? 'Portfolio' : variant === 'internal' ? 'Equipo' : 'Growth'}</h2>
-          <p>{variantCopy.callout}</p>
-        </div>
-        <div className="feature-grid">
-          <FeatureCard
-            title={lang === 'es' ? 'Presencia clara' : 'Clear presence'}
-            body={
-              lang === 'es'
-                ? 'Un recorrido visual para hoteles que quieren comunicar rapidez, confianza y experiencia.'
-                : 'A visual journey for hotels that wants to communicate speed, trust, and experience.'
-            }
-            accent={meta.accent}
-          />
-          <FeatureCard
-            title={lang === 'es' ? 'Sistema flexible' : 'Flexible system'}
-            body={
-              lang === 'es'
-                ? 'El mismo núcleo sirve para portfolio, coordinación interna o captación comercial.'
-                : 'The same core works for portfolio, internal coordination, or commercial acquisition.'
-            }
-            accent={meta.accent}
-          />
-          <FeatureCard
-            title={lang === 'es' ? 'Listo para móvil' : 'Mobile ready'}
-            body={
-              lang === 'es'
-                ? 'Pensado para responsables de hotel que revisan y responden desde el móvil.'
-                : 'Designed for hotel managers who review and reply from mobile first.'
-            }
-            accent={meta.accent}
-          />
-        </div>
-      </section>
-
-      {variant === 'portfolio' ? (
-        <PortfolioSections lang={lang} />
-      ) : variant === 'internal' ? (
-        <InternalSections lang={lang} />
-      ) : (
-        <MarketingSections lang={lang} />
-      )}
-    </main>
-  );
-}
-
-function FeatureCard({ title, body, accent }: { title: string; body: string; accent: string }) {
-  return (
-    <article className="feature-card">
-      <div className="feature-card__line" style={{ background: accent }} />
-      <h3>{title}</h3>
-      <p>{body}</p>
-    </article>
-  );
-}
-
-function SectionBlock({
-  eyebrow,
-  title,
-  body,
-  children,
-  reverse = false,
-}: {
-  eyebrow: string;
-  title: string;
-  body: string;
-  children: ReactNode;
-  reverse?: boolean;
-}) {
-  return (
-    <section className={`story-section ${reverse ? 'story-section--reverse' : ''}`}>
-      <div className="story-section__heading">
-        <p className="selector-eyebrow">{eyebrow}</p>
-        <h2>{title}</h2>
-        <p>{body}</p>
-      </div>
-      <div className="story-section__content">{children}</div>
-    </section>
-  );
-}
-
-function PortfolioSections({ lang }: { lang: Lang }) {
-  return (
-    <>
-      <SectionBlock
-        eyebrow={lang === 'es' ? 'Servicios en temporada' : 'In-season services'}
-        title={
-          lang === 'es'
-            ? 'Una vitrina de servicios clara y fácil de leer'
-            : 'A clear service showcase that is easy to scan'
-        }
-        body={
-          lang === 'es'
-            ? 'Los cuatro servicios principales se entienden de inmediato, con una narrativa pensada para hoteles y resorts.'
-            : 'The four core services are instantly readable, with a narrative made for hotels and resorts.'
-        }
-      >
-        <div className="service-grid">
-          {[
-            {
-              title: lang === 'es' ? 'Socorristas' : 'Lifeguards',
-              image: media.lifeguard,
-              body:
-                lang === 'es'
-                  ? 'Supervisión, seguridad y cobertura de piscina con foco en confianza operativa.'
-                  : 'Pool supervision, safety, and coverage with operational trust built in.',
-            },
-            {
-              title: lang === 'es' ? 'Animación infantil' : 'Children animation',
-              image: media.magician,
-              body:
-                lang === 'es'
-                  ? 'Actividades familiares, juegos y mini clubs que activan la estancia.'
-                  : 'Family activities, games, and mini clubs that energize the stay.',
-            },
-            {
-              title: lang === 'es' ? 'Fitness de grupo' : 'Group fitness',
-              image: media.poolAlt,
-              body:
-                lang === 'es'
-                  ? 'Clases dinámicas, bienestar y energía durante toda la temporada.'
-                  : 'Dynamic classes, wellness, and energy throughout the season.',
-            },
-            {
-              title: lang === 'es' ? 'Música y shows' : 'Music and shows',
-              image: media.contact,
-              body:
-                lang === 'es'
-                  ? 'Entretenimiento nocturno, equipos de animación y grupos para eventos.'
-                  : 'Evening entertainment, animation teams, and groups for events.',
-            },
-          ].map((item, index) => (
-            <article className="service-card" key={item.title}>
-              <div className="service-card__media">
-                <img src={item.image} alt="" />
-                <span className="service-card__badge">{String(index + 1).padStart(2, '0')}</span>
-              </div>
-              <h3>{item.title}</h3>
-              <p>{item.body}</p>
-            </article>
-          ))}
-        </div>
-      </SectionBlock>
-
-      <SectionBlock
-        eyebrow={lang === 'es' ? 'Operación y cobertura' : 'Operations and coverage'}
-        title={
-          lang === 'es'
-            ? 'La estructura detrás de los 28 hoteles'
-            : 'The structure behind 28 hotels'
-        }
-        body={
-          lang === 'es'
-            ? 'Un sistema flexible para temporada alta: turnos, seguridad, visibilidad y coordinación con hotel.'
-            : 'A flexible high-season system: shifts, safety, visibility, and hotel coordination.'
-        }
-        reverse
-      >
-        <div className="coverage-layout">
-          <div className="coverage-card coverage-card--text">
-            <strong>{lang === 'es' ? 'Cobertura real' : 'Real coverage'}</strong>
-            <p>
-              {lang === 'es'
-                ? 'El sitio muestra una oferta concreta, con espacio para explicar cómo se cubren piscinas, animación y eventos sin perder calidad.'
-                : 'The site shows a concrete offer, with room to explain how pools, animation, and events are covered without losing quality.'}
-            </p>
-            <ul>
-              <li>{lang === 'es' ? 'Planificación por hotel' : 'Hotel-by-hotel planning'}</li>
-              <li>{lang === 'es' ? 'Coordinación por turnos' : 'Shift coordination'}</li>
-              <li>{lang === 'es' ? 'Lenguaje comercial claro' : 'Clear commercial language'}</li>
-            </ul>
-          </div>
-          <div className="coverage-map">
-            <img src={media.pool} alt="" />
-            <div className="coverage-map__overlay">
-              {['01', '07', '12', '18', '21', '28'].map((item) => (
-                <span key={item}>{item}</span>
+                </article>
               ))}
             </div>
           </div>
-          <div className="coverage-card coverage-card--stats">
-            <div>
-              <strong>28</strong>
-              <span>{lang === 'es' ? 'hoteles' : 'hotels'}</span>
-            </div>
-            <div>
-              <strong>4</strong>
-              <span>{lang === 'es' ? 'servicios' : 'services'}</span>
-            </div>
-            <div>
-              <strong>1</strong>
-              <span>{lang === 'es' ? 'sistema' : 'system'}</span>
-            </div>
+        </section>
+
+        <section className="about section" id="about">
+          <div className="about__image">
+            <img src={media.lifeguardAlt} alt={lang === 'es' ? 'Profesional de GESIEMES en una piscina' : 'GESIEMES pool professional'} />
           </div>
-        </div>
-      </SectionBlock>
-
-      <SectionBlock
-        eyebrow={lang === 'es' ? 'Prueba social' : 'Social proof'}
-        title={
-          lang === 'es' ? 'Mensajes que ayudan a cerrar acuerdos' : 'Messages that help close deals'
-        }
-        body={
-          lang === 'es'
-            ? 'Un portfolio fuerte necesita confianza visible. Aquí entran testimonios, cobertura y resultados.'
-            : 'A strong portfolio needs visible trust. This is where testimonials, coverage, and results fit.'
-        }
-      >
-        <div className="quote-grid">
-          {[
-            {
-              quote:
-                lang === 'es'
-                  ? 'Equipo puntual, energía alta y una experiencia que los huéspedes realmente recuerdan.'
-                  : 'Punctual team, high energy, and an experience guests genuinely remember.',
-              source: lang === 'es' ? 'Director de hotel' : 'Hotel director',
-            },
-            {
-              quote:
-                lang === 'es'
-                  ? 'Nos ayudaron a mantener la piscina y la animación con una coordinación muy sencilla.'
-                  : 'They helped us run pool coverage and animation with very simple coordination.',
-              source: lang === 'es' ? 'Responsable de operaciones' : 'Operations manager',
-            },
-            {
-              quote:
-                lang === 'es'
-                  ? 'Su propuesta es clara y comercialmente muy fácil de explicar al cliente final.'
-                  : 'Their offer is clear and very easy to explain to the final client.',
-              source: lang === 'es' ? 'Partner comercial' : 'Commercial partner',
-            },
-          ].map((item) => (
-            <blockquote className="quote-card" key={item.source}>
-              <p>{item.quote}</p>
-              <footer>{item.source}</footer>
-            </blockquote>
-          ))}
-        </div>
-      </SectionBlock>
-
-      <section className="cta-band">
-        <div>
-          <p className="selector-eyebrow">{lang === 'es' ? 'Siguiente paso' : 'Next step'}</p>
-          <h2>{lang === 'es' ? 'Portfolio listo para presentar a hoteles' : 'Portfolio ready to present to hotels'}</h2>
-        </div>
-        <button className="primary" type="button" onClick={() => goTo(buildPath('marketing', lang))}>
-          {lang === 'es' ? 'Ver versión comercial' : 'See the commercial version'}
-        </button>
-      </section>
-    </>
-  );
-}
-
-function InternalSections({ lang }: { lang: Lang }) {
-  return (
-    <>
-      <SectionBlock
-        eyebrow={lang === 'es' ? 'Panel operativo' : 'Ops dashboard'}
-        title={
-          lang === 'es'
-            ? 'Una capa interna para coordinar mejor la temporada'
-            : 'An internal layer to coordinate the season better'
-        }
-        body={
-          lang === 'es'
-            ? 'La misma marca, pero con una interfaz pensada para turnos, incidencias y soporte al equipo.'
-            : 'Same brand, but with an interface designed for shifts, incidents, and team support.'
-        }
-      >
-        <div className="dashboard-shell">
-          <aside className="dashboard-nav">
-            <span className="dashboard-nav__brand">GESIEMES</span>
-            <button className="dashboard-nav__item dashboard-nav__item--active">{lang === 'es' ? 'Resumen' : 'Overview'}</button>
-            <button className="dashboard-nav__item">{lang === 'es' ? 'Turnos' : 'Shifts'}</button>
-            <button className="dashboard-nav__item">{lang === 'es' ? 'Checklist' : 'Checklist'}</button>
-            <button className="dashboard-nav__item">{lang === 'es' ? 'Mensajes' : 'Messages'}</button>
-            <button className="dashboard-nav__item">{lang === 'es' ? 'Formación' : 'Training'}</button>
-          </aside>
-          <div className="dashboard-main">
-            <div className="dashboard-main__hero">
-              <img src={media.hotel} alt="" />
-              <div className="dashboard-main__hero-card">
-                <span>{lang === 'es' ? 'Hoy' : 'Today'}</span>
-                <strong>{lang === 'es' ? 'Equipo cubierto' : 'Coverage ready'}</strong>
-                <p>{lang === 'es' ? 'Bloque interno para ver turnos y avisos en un vistazo.' : 'Internal block to see shifts and notices at a glance.'}</p>
+          <div className="about__copy">
+            <h2>{t.aboutTitle}</h2>
+            <p>{t.aboutBody}</p>
+            <div className="about__facts">
+              <div>
+                <strong>15+</strong>
+                <span>{lang === 'es' ? 'años de experiencia' : 'years of experience'}</span>
+              </div>
+              <div>
+                <strong>Salou</strong>
+                <span>{lang === 'es' ? 'base de coordinación' : 'coordination base'}</span>
               </div>
             </div>
-            <div className="dashboard-metrics">
-              {[
-                [lang === 'es' ? 'Hoteles activos' : 'Active hotels', '28'],
-                [lang === 'es' ? 'Incidencias' : 'Incidents', '6'],
-                [lang === 'es' ? 'Cobertura hoy' : 'Coverage today', '92%'],
-                [lang === 'es' ? 'Equipos' : 'Teams', '14'],
-              ].map(([label, value]) => (
-                <div className="dashboard-metric" key={label}>
-                  <strong>{value}</strong>
-                  <span>{label}</span>
-                </div>
-              ))}
-            </div>
-            <div className="shift-rail">
-              {[
-                [lang === 'es' ? 'Apertura piscina' : 'Pool opening', '08:00', '09:30'],
-                [lang === 'es' ? 'Animación mini club' : 'Mini club animation', '10:00', '13:00'],
-                [lang === 'es' ? 'Fitness / aqua' : 'Fitness / aqua', '11:00', '12:00'],
-                [lang === 'es' ? 'Show nocturno' : 'Evening show', '20:00', '22:30'],
-              ].map(([label, start, end]) => (
-                <div className="shift-row" key={label}>
-                  <span>{label}</span>
-                  <span>{start}</span>
-                  <span>{end}</span>
-                </div>
-              ))}
-            </div>
-            <div className="dashboard-main__gallery">
-              <img src={media.lifeguard} alt="" />
-              <img src={media.poolAlt} alt="" />
-              <img src={media.coding} alt="" />
-            </div>
           </div>
-        </div>
-      </SectionBlock>
+        </section>
 
-      <SectionBlock
-        eyebrow={lang === 'es' ? 'Recursos internos' : 'Internal resources'}
-        title={lang === 'es' ? 'Manuales, listas y materiales de onboarding' : 'Manuals, checklists, and onboarding materials'}
-        body={
-          lang === 'es'
-            ? 'Toda la información clave agrupada para que el equipo actúe con menos dependencia y más rapidez.'
-            : 'All the key information grouped so the team can act with less dependency and more speed.'
-        }
-        reverse
-      >
-        <div className="resource-grid">
-          {[
-            lang === 'es' ? 'Manual de apertura' : 'Opening manual',
-            lang === 'es' ? 'Checklist diario' : 'Daily checklist',
-            lang === 'es' ? 'Guía de seguridad' : 'Safety guide',
-            lang === 'es' ? 'Kit de bienvenida' : 'Welcome kit',
-          ].map((title, index) => (
-            <article className="resource-card" key={title}>
-              <span>{String(index + 1).padStart(2, '0')}</span>
-              <h3>{title}</h3>
-              <p>
-                {lang === 'es'
-                  ? 'Acceso rápido para que el equipo abra, revise y entregue el servicio con el mismo estándar.'
-                  : 'Quick access so the team can open, review, and deliver the service to the same standard.'}
-              </p>
-              <img src={index % 2 === 0 ? media.lifeguard : media.hotel} alt="" />
-            </article>
-          ))}
-        </div>
-      </SectionBlock>
+        <section className="reviews section">
+          <div className="section-heading">
+            <h2>{t.quoteTitle}</h2>
+            <p className="sample-note">{t.quoteNote}</p>
+          </div>
+          <div className="review-grid">
+            {t.quotes.map(([quote, author]) => (
+              <blockquote key={author}>
+                <p>{quote}</p>
+                <footer>{author}</footer>
+              </blockquote>
+            ))}
+          </div>
+        </section>
 
-      <SectionBlock
-        eyebrow={lang === 'es' ? 'Comunicación y soporte' : 'Communication and support'}
-        title={lang === 'es' ? 'Avisos claros y seguimiento del día' : 'Clear notices and day-to-day follow-up'}
-        body={
-          lang === 'es'
-            ? 'Mensajes breves, decisiones rápidas y una capa visual que reduce fricción operativa.'
-            : 'Short messages, fast decisions, and a visual layer that reduces operational friction.'
-        }
-      >
-        <div className="notice-grid">
-          <article className="notice-card notice-card--wide">
-            <p>{lang === 'es' ? 'Aviso del día' : 'Today’s notice'}</p>
-            <h3>{lang === 'es' ? 'Cambio de turno a las 17:30' : 'Shift change at 5:30 PM'}</h3>
-            <span>{lang === 'es' ? 'Revisar cobertura antes del briefing.' : 'Review coverage before briefing.'}</span>
-          </article>
-          <article className="notice-card">
-            <p>{lang === 'es' ? 'WhatsApp interno' : 'Internal WhatsApp'}</p>
-            <h3>+34 600 111 222</h3>
-            <span>{lang === 'es' ? 'Soporte rápido para la temporada.' : 'Fast seasonal support.'}</span>
-          </article>
-          <article className="notice-card">
-            <p>{lang === 'es' ? 'Formación' : 'Training'}</p>
-            <h3>{lang === 'es' ? 'Nueva sesión mañana' : 'New session tomorrow'}</h3>
-            <span>{lang === 'es' ? 'Material para nuevos incorporados.' : 'Material for new joiners.'}</span>
-          </article>
-        </div>
-      </SectionBlock>
-
-      <section className="cta-band">
-        <div>
-          <p className="selector-eyebrow">{lang === 'es' ? 'Equipo' : 'Team'}</p>
-          <h2>{lang === 'es' ? 'Un sitio que ayuda a operar' : 'A site that helps the operation'}</h2>
-        </div>
-        <button className="primary" type="button" onClick={() => goTo(buildPath('marketing', lang))}>
-          {lang === 'es' ? 'Ver versión de marketing' : 'See the marketing version'}
-        </button>
-      </section>
-    </>
-  );
-}
-
-function MarketingSections({ lang }: { lang: Lang }) {
-  return (
-    <>
-      <SectionBlock
-        eyebrow={lang === 'es' ? 'Captación comercial' : 'Commercial acquisition'}
-        title={
-          lang === 'es' ? 'Un sitio pensado para abrir conversaciones' : 'A site designed to start conversations'
-        }
-        body={
-          lang === 'es'
-            ? 'La experiencia comercial necesita más urgencia, más prueba y una entrada clara hacia la solicitud de propuesta.'
-            : 'The commercial experience needs more urgency, more proof, and a clear entry point into proposal requests.'
-        }
-      >
-        <div className="region-grid">
-          {[
-            {
-              region: 'Costa',
-              value: lang === 'es' ? 'Hoteles de playa y resorts' : 'Beach hotels and resorts',
-              image: media.pool,
-            },
-            {
-              region: 'Interior',
-              value: lang === 'es' ? 'Programas familiares y de relax' : 'Family and relaxation programs',
-              image: media.hotel,
-            },
-            {
-              region: 'Islas',
-              value: lang === 'es' ? 'Cobertura alta en temporada' : 'High seasonal coverage',
-              image: media.lifeguard,
-            },
-          ].map((item) => (
-            <article className="region-card" key={item.region}>
-              <span>{item.region}</span>
-              <img src={item.image} alt="" />
-              <h3>{item.value}</h3>
-              <p>
-                {lang === 'es'
-                  ? 'Propuesta comercial alineada con la realidad de contratación hotelera.'
-                  : 'Commercial offer aligned with hotel procurement realities.'}
-              </p>
-            </article>
-          ))}
-        </div>
-      </SectionBlock>
-
-      <SectionBlock
-        eyebrow={lang === 'es' ? 'Casos de éxito' : 'Case studies'}
-        title={lang === 'es' ? 'Bloques listos para vender el valor' : 'Blocks ready to sell the value'}
-        body={
-          lang === 'es'
-            ? 'Cada caso puede explicar cobertura, resultado y confianza de forma breve.'
-            : 'Each case can explain coverage, outcome, and trust in a concise way.'
-        }
-        reverse
-      >
-        <div className="case-grid">
-          {[
-            [lang === 'es' ? 'Un hotel, tres servicios' : 'One hotel, three services', '28% +', media.hotel],
-            [lang === 'es' ? 'Estrategia por temporada' : 'Seasonal strategy', '12 semanas', media.pool],
-            [lang === 'es' ? 'Recontratación' : 'Rebooking', '92%', media.contact],
-          ].map(([title, metric, image]) => (
-            <article className="case-card" key={title}>
-              <img src={image as string} alt="" />
-              <div className="case-card__metric">{metric}</div>
-              <h3>{title}</h3>
-              <p>
-                {lang === 'es'
-                  ? 'Un formato ideal para demostrar continuidad, capacidad y calidad del servicio.'
-                  : 'An ideal format to show continuity, capacity, and service quality.'}
-              </p>
-            </article>
-          ))}
-        </div>
-      </SectionBlock>
-
-      <SectionBlock
-        eyebrow={lang === 'es' ? 'Contacto' : 'Contact'}
-        title={lang === 'es' ? 'Formulario corto, respuesta rápida' : 'Short form, fast response'}
-        body={
-          lang === 'es'
-            ? 'Reducir fricción es clave: fecha, hotel, servicio y teléfono.'
-            : 'Reducing friction is key: date, hotel, service, and phone.'
-        }
-      >
-        <div className="contact-panel">
-          <div className="contact-copy">
-            <img src={media.contact} alt="" />
-            <strong>{lang === 'es' ? 'Solicita propuesta' : 'Request a proposal'}</strong>
-            <p>
-              {lang === 'es'
-                ? 'Ideal para captar nuevos hoteles con una ruta clara hacia presupuesto y seguimiento comercial.'
-                : 'Ideal for acquiring new hotels with a clear route to pricing and commercial follow-up.'}
-            </p>
-            <button className="primary" type="button">
-              {lang === 'es' ? 'Abrir formulario' : 'Open form'}
+        <section className="custom-request section">
+          <img src={media.contact} alt="" />
+          <div className="custom-request__glass">
+            <div>
+              <h2>{t.customTitle}</h2>
+              <p>{t.customBody}</p>
+            </div>
+            <button className="button button--primary" type="button" onClick={() => scrollToId('contact')}>
+              {t.customCta}
             </button>
           </div>
-          <div className="contact-form">
-            <div className="contact-form__art">
-              <img src={media.magician} alt="" />
-            </div>
-            <div className="form-row">
-              <span>{lang === 'es' ? 'Nombre del hotel' : 'Hotel name'}</span>
-            </div>
-            <div className="form-row">
-              <span>{lang === 'es' ? 'Servicio solicitado' : 'Requested service'}</span>
-            </div>
-            <div className="form-row">
-              <span>{lang === 'es' ? 'Temporada' : 'Season'}</span>
-            </div>
-            <div className="form-row form-row--cta">
-              <span>{lang === 'es' ? 'Enviar solicitud' : 'Send request'}</span>
-            </div>
+        </section>
+
+        <section className="careers section" id="careers">
+          <div className="careers__image">
+            <img src={media.entertainment} alt={lang === 'es' ? 'Equipo de entretenimiento' : 'Entertainment team'} />
           </div>
-        </div>
-      </SectionBlock>
+          <div className="careers__content">
+            <h2>{t.careersTitle}</h2>
+            <p>{t.careersBody}</p>
+            <div className="role-list">
+              {t.roles.map((role, index) => (
+                <span key={role}>
+                  <b>{String(index + 1).padStart(2, '0')}</b>
+                  {role}
+                </span>
+              ))}
+            </div>
+            <button className="button button--dark" type="button" onClick={() => setCareerOpen((open) => !open)} aria-expanded={careerOpen}>
+              {t.apply}
+            </button>
+          </div>
 
-      <section className="cta-band">
+          {careerOpen ? (
+            <form className="career-form" onSubmit={(event) => handleSubmit(event, 'career')}>
+              <div className="form-heading">
+                <h3>{t.applicationTitle}</h3>
+                <button type="button" onClick={() => setCareerOpen(false)} aria-label={lang === 'es' ? 'Cerrar' : 'Close'}>
+                  ×
+                </button>
+              </div>
+              <div className="field-grid">
+                <label>
+                  <span>{lang === 'es' ? 'Nombre y apellidos' : 'Full name'}</span>
+                  <input required name="name" autoComplete="name" />
+                </label>
+                <label>
+                  <span>Email</span>
+                  <input required type="email" name="email" autoComplete="email" />
+                </label>
+                <label>
+                  <span>{lang === 'es' ? 'Perfil profesional' : 'Professional profile'}</span>
+                  <select required name="role" defaultValue="">
+                    <option value="" disabled>
+                      {lang === 'es' ? 'Selecciona una opción' : 'Choose an option'}
+                    </option>
+                    {t.roles.map((role) => (
+                      <option key={role}>{role}</option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  <span>{lang === 'es' ? 'Disponibilidad' : 'Availability'}</span>
+                  <input name="availability" placeholder={lang === 'es' ? 'Fechas y zona' : 'Dates and area'} />
+                </label>
+              </div>
+              <label>
+                <span>{lang === 'es' ? 'Experiencia y titulaciones' : 'Experience and qualifications'}</span>
+                <textarea required name="experience" rows={4} />
+              </label>
+              <label className="consent">
+                <input required type="checkbox" />
+                <span>{lang === 'es' ? 'Acepto el tratamiento de mis datos para gestionar esta candidatura.' : 'I accept the processing of my data to manage this application.'}</span>
+              </label>
+              <button className="button button--primary" type="submit">
+                {t.apply}
+              </button>
+              {applicationSent ? <p className="form-success" role="status">{t.applicationSent}</p> : null}
+            </form>
+          ) : null}
+        </section>
+
+        <section className="contact section" id="contact">
+          <div className="contact__copy">
+            <h2>{t.contactTitle}</h2>
+            <p>{t.contactBody}</p>
+            <address>
+              <a href="tel:+34658273162">+34 658 27 31 62</a>
+              <a href="mailto:info@gesiemes.com">info@gesiemes.com</a>
+              <span>Roger de Llúria, s/n<br />43840 Salou, Tarragona, España</span>
+            </address>
+          </div>
+          <form className="contact-form" onSubmit={(event) => handleSubmit(event, 'contact')}>
+            <div className="field-grid">
+              <label>
+                <span>{lang === 'es' ? 'Nombre y apellidos' : 'Full name'}</span>
+                <input required name="name" autoComplete="name" />
+              </label>
+              <label>
+                <span>Email</span>
+                <input required type="email" name="email" autoComplete="email" />
+              </label>
+              <label>
+                <span>{lang === 'es' ? 'Hotel o empresa' : 'Hotel or company'}</span>
+                <input required name="company" autoComplete="organization" />
+              </label>
+              <label>
+                <span>{lang === 'es' ? 'Teléfono' : 'Phone'}</span>
+                <input name="phone" type="tel" autoComplete="tel" />
+              </label>
+            </div>
+            <label>
+              <span>{lang === 'es' ? '¿Qué necesitas?' : 'What do you need?'}</span>
+              <textarea required name="message" rows={5} />
+            </label>
+            <label className="consent">
+              <input required type="checkbox" />
+              <span>{t.privacy}</span>
+            </label>
+            <button className="button button--primary" type="submit">
+              {t.send}
+            </button>
+            {contactSent ? <p className="form-success" role="status">{t.sent}</p> : null}
+          </form>
+        </section>
+      </main>
+
+      <footer className="site-footer">
+        <div className="footer-brand">
+          <img src={media.logo} alt="GESIEMES" />
+          <p>{lang === 'es' ? 'Servicios profesionales para hoteles y resorts.' : 'Professional services for hotels and resorts.'}</p>
+        </div>
         <div>
-          <p className="selector-eyebrow">{lang === 'es' ? 'Marketing' : 'Marketing'}</p>
-          <h2>{lang === 'es' ? 'Listo para vender a nuevos hoteles' : 'Ready to sell to new hotels'}</h2>
+          <h2>{t.imprint}</h2>
+          <address>
+            <strong>GESIEMES 2017, SL</strong>
+            <span>NIF B55704852</span>
+            <span>Roger de Llúria, s/n</span>
+            <span>43840 Salou, Tarragona, España</span>
+            <a href="tel:+34658273162">+34 658 27 31 62</a>
+            <a href="mailto:info@gesiemes.com">info@gesiemes.com</a>
+          </address>
         </div>
-        <button className="primary" type="button" onClick={() => goTo(buildPath('portfolio', lang))}>
-          {lang === 'es' ? 'Ver portafolio' : 'See the portfolio'}
-        </button>
-      </section>
-    </>
-  );
-}
-
-function Ambient() {
-  return (
-    <div className="ambient" aria-hidden="true">
-      <div className="ambient__blob ambient__blob--one" />
-      <div className="ambient__blob ambient__blob--two" />
-      <div className="ambient__grain" />
+        <div className="footer-links">
+          <h2>Legal</h2>
+          <a href="https://www.gesiemes.com/aviso-legal/" target="_blank" rel="noreferrer">
+            {lang === 'es' ? 'Aviso legal' : 'Legal notice'}
+          </a>
+          <a href="https://www.gesiemes.com/politica-de-privacidad/" target="_blank" rel="noreferrer">
+            {lang === 'es' ? 'Política de privacidad' : 'Privacy policy'}
+          </a>
+          <a href="https://www.gesiemes.com/politica-de-cookies/" target="_blank" rel="noreferrer">
+            {lang === 'es' ? 'Política de cookies' : 'Cookie policy'}
+          </a>
+        </div>
+        <p className="footer-bottom">© {new Date().getFullYear()} GESIEMES 2017, SL. {lang === 'es' ? 'Todos los derechos reservados.' : 'All rights reserved.'}</p>
+      </footer>
     </div>
   );
 }
