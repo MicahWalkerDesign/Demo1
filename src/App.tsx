@@ -203,15 +203,17 @@ const routeMeta: Record<
   },
 };
 
+const asset = (filename: string) => `${import.meta.env.BASE_URL}assets/gesiemes/${filename}`;
+
 const media = {
-  logo: '/assets/gesiemes/logo.png',
-  pool: '/assets/gesiemes/swimming-pool.jpg',
-  poolAlt: '/assets/gesiemes/lifeguard-2.jpg',
-  lifeguard: '/assets/gesiemes/lifeguard-1.jpg',
-  hotel: '/assets/gesiemes/hotel.jpg',
-  magician: '/assets/gesiemes/magician.jpg',
-  contact: '/assets/gesiemes/contact.jpg',
-  coding: '/assets/gesiemes/coding-icon.jpg',
+  logo: asset('logo.png'),
+  pool: asset('swimming-pool.jpg'),
+  poolAlt: asset('lifeguard-2.jpg'),
+  lifeguard: asset('lifeguard-1.jpg'),
+  hotel: asset('hotel.jpg'),
+  magician: asset('magician.jpg'),
+  contact: asset('contact.jpg'),
+  coding: asset('coding-icon.jpg'),
 } as const;
 
 function parseRoute(): Route {
@@ -285,15 +287,21 @@ function App() {
             onClick={() => goTo(buildPath('home', lang))}
             aria-label={lang === 'es' ? 'Volver al inicio' : 'Go home'}
           >
-            <span className="brand-mark">G</span>
-            <span>{t.brand}</span>
+            <span className="brand-mark">
+              <img src={media.logo} alt="" />
+            </span>
+            <span className="brand-name">{t.brand}</span>
           </button>
           <nav className="topnav" aria-label="Primary">
-            <a href="#options">{lang === 'es' ? 'Servicios' : 'Services'}</a>
-            <a href="#options">{lang === 'es' ? 'Cobertura' : 'Coverage'}</a>
-            <a href="#options">{lang === 'es' ? 'Quiénes somos' : 'About'}</a>
-            <a href="#options">{lang === 'es' ? 'Casos de éxito' : 'Case studies'}</a>
-            <a href="#options">{lang === 'es' ? 'Contacto' : 'Contact'}</a>
+            <button type="button" onClick={() => goTo(buildPath('portfolio', lang))}>
+              {lang === 'es' ? 'Portfolio' : 'Portfolio'}
+            </button>
+            <button type="button" onClick={() => goTo(buildPath('internal', lang))}>
+              {lang === 'es' ? 'Equipo' : 'Team'}
+            </button>
+            <button type="button" onClick={() => goTo(buildPath('marketing', lang))}>
+              {lang === 'es' ? 'Crecimiento' : 'Growth'}
+            </button>
           </nav>
           <div className="topbar-actions">
             <button
@@ -318,8 +326,10 @@ function App() {
             onClick={() => goTo(buildPath('home', lang))}
             aria-label={lang === 'es' ? 'Volver al inicio' : 'Go home'}
           >
-            <span className="brand-mark">G</span>
-            <span>{t.brand}</span>
+            <span className="brand-mark">
+              <img src={media.logo} alt="" />
+            </span>
+            <span className="brand-name">{t.brand}</span>
           </button>
           <div className="topbar-actions">
             <button className="ghost" type="button" onClick={() => goTo(buildPath('home', lang))}>
@@ -371,6 +381,19 @@ function HomeView({ lang }: { lang: Lang }) {
               ? 'Animación, deporte y bienestar para hoteles que buscan experiencias memorables y equipos fiables.'
               : 'Animation, sport, and wellbeing for hotels that want memorable experiences and reliable teams.'}
           </p>
+          <div className="hero-actions">
+            <button
+              className="primary"
+              type="button"
+              onClick={() => document.getElementById('options')?.scrollIntoView({ behavior: 'smooth' })}
+            >
+              {lang === 'es' ? 'Explorar las 3 propuestas' : 'Explore the 3 concepts'}
+            </button>
+            <button className="hero-link" type="button" onClick={() => goTo(buildPath('portfolio', lang))}>
+              {lang === 'es' ? 'Ver portfolio' : 'View portfolio'}
+              <span aria-hidden="true">↗</span>
+            </button>
+          </div>
           <div className="hero-signals">
             {[
               lang === 'es' ? 'Equipos especializados' : 'Specialist teams',
@@ -628,7 +651,7 @@ function MockupView({ lang, variant }: { lang: Lang; variant: Variant }) {
             title={lang === 'es' ? 'Presencia clara' : 'Clear presence'}
             body={
               lang === 'es'
-                ? 'Un recorrido visual para hoteles que quiere comunicar rapidez, confianza y experiencia.'
+                ? 'Un recorrido visual para hoteles que quieren comunicar rapidez, confianza y experiencia.'
                 : 'A visual journey for hotels that wants to communicate speed, trust, and experience.'
             }
             accent={meta.accent}
@@ -643,7 +666,7 @@ function MockupView({ lang, variant }: { lang: Lang; variant: Variant }) {
             accent={meta.accent}
           />
           <FeatureCard
-            title={lang === 'es' ? 'Listo para mobile' : 'Mobile ready'}
+            title={lang === 'es' ? 'Listo para móvil' : 'Mobile ready'}
             body={
               lang === 'es'
                 ? 'Pensado para responsables de hotel que revisan y responden desde el móvil.'
@@ -908,7 +931,7 @@ function InternalSections({ lang }: { lang: Lang }) {
             </div>
             <div className="dashboard-metrics">
               {[
-                [lang === 'es' ? 'Hotel activos' : 'Active hotels', '28'],
+                [lang === 'es' ? 'Hoteles activos' : 'Active hotels', '28'],
                 [lang === 'es' ? 'Incidencias' : 'Incidents', '6'],
                 [lang === 'es' ? 'Cobertura hoy' : 'Coverage today', '92%'],
                 [lang === 'es' ? 'Equipos' : 'Teams', '14'],
