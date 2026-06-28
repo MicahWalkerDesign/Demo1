@@ -105,17 +105,17 @@ summary:focus-visible {
 
 .brand {
   justify-self: start;
-  width: 126px;
-  padding: 7px 9px;
+  width: 142px;
+  padding: 0;
   border: 0;
-  border-radius: 13px;
-  background: rgba(255, 255, 255, 0.94);
+  background: transparent;
   cursor: pointer;
 }
 
 .brand img {
   width: 100%;
   height: auto;
+  filter: brightness(1.7) saturate(1.06) drop-shadow(0 1px 1px rgba(255, 255, 255, 0.3));
 }
 
 .desktop-nav {
@@ -789,6 +789,7 @@ summary:focus-visible {
   position: relative;
   width: min(1360px, calc(100% - 32px));
   min-height: 390px;
+  margin: 110px auto;
   padding: 28px;
   overflow: hidden;
   border-radius: 36px;
@@ -1020,18 +1021,16 @@ textarea {
 
 .site-footer {
   display: grid;
-  grid-template-columns: 1.1fr 1fr 0.7fr;
-  gap: 70px;
+  grid-template-columns: 1fr 1.05fr 0.9fr 0.65fr;
+  gap: 48px;
   padding: 70px max(24px, calc((100vw - 1320px) / 2)) 30px;
   background: #202a31;
   color: #fff;
 }
 
 .footer-brand img {
-  width: 170px;
-  padding: 10px;
-  border-radius: 14px;
-  background: #fff;
+  width: 190px;
+  filter: brightness(1.7) saturate(1.06) drop-shadow(0 1px 1px rgba(255, 255, 255, 0.3));
 }
 
 .footer-brand p {
@@ -1039,6 +1038,15 @@ textarea {
   margin: 20px 0 0;
   color: rgba(255, 255, 255, 0.58);
   line-height: 1.6;
+}
+
+.footer-brand > a,
+.footer-hours > a {
+  display: inline-block;
+  margin-top: 14px;
+  color: var(--orange);
+  font-size: 0.84rem;
+  font-weight: 700;
 }
 
 .site-footer h2 {
@@ -1051,7 +1059,8 @@ textarea {
 }
 
 .site-footer address,
-.footer-links {
+.footer-links,
+.footer-hours {
   display: grid;
   gap: 7px;
   font-style: normal;
@@ -1060,9 +1069,27 @@ textarea {
 
 .site-footer address span,
 .site-footer address a,
-.footer-links a {
+.footer-links a,
+.footer-hours span,
+.footer-hours p {
   color: rgba(255, 255, 255, 0.68);
   font-size: 0.86rem;
+}
+
+.footer-hours span {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.footer-hours span strong {
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 600;
+}
+
+.footer-hours p {
+  margin: 13px 0 0;
+  line-height: 1.55;
 }
 
 .footer-links a:hover {
@@ -1447,6 +1474,7 @@ textarea {
   .custom-request {
     width: calc(100% - 20px);
     min-height: 520px;
+    margin: 78px auto;
     padding: 10px;
     border-radius: 24px;
   }

@@ -5,7 +5,7 @@ type Lang = 'es' | 'en';
 const asset = (filename: string) => `${import.meta.env.BASE_URL}assets/gesiemes/${filename}`;
 
 const media = {
-  logo: asset('logo.png'),
+  logo: asset('logo-transparent.png'),
   pool: asset('swimming-pool.jpg'),
   lifeguard: asset('lifeguard-1.jpg'),
   lifeguardAlt: asset('lifeguard-2.jpg'),
@@ -13,7 +13,11 @@ const media = {
   entertainment: asset('magician.jpg'),
   contact: asset('contact.jpg'),
   aqua: asset('aqua-fitness.jpg'),
+  salsa: asset('salsa-premium.jpg'),
 } as const;
+
+const googleBusinessUrl =
+  'https://www.google.com/maps/search/?api=1&query=Gesiemes+2017%2C+S.L.%2C+Carrer+de+Roger+de+Ll%C3%BAria+15%2C+43840+Salou';
 
 const content = {
   es: {
@@ -198,7 +202,7 @@ function getServices(lang: Lang) {
         {
           title: 'Música, espectáculos y entretenimiento',
           intro: 'Propuestas para noches, eventos y momentos especiales dentro del hotel.',
-          image: media.contact,
+          image: media.salsa,
           points: [
             'Grupos musicales, artistas, shows y formatos de animación.',
             'Selección según público, espacio, presupuesto y horario.',
@@ -248,7 +252,7 @@ function getServices(lang: Lang) {
         {
           title: 'Music, shows, and entertainment',
           intro: 'Programming for evenings, events, and special moments at the hotel.',
-          image: media.contact,
+          image: media.salsa,
           points: [
             'Music groups, artists, shows, and animation formats.',
             'Selection based on audience, space, budget, and schedule.',
@@ -520,7 +524,7 @@ function App() {
 
         <section className="careers section" id="careers">
           <div className="careers__image">
-            <img src={media.entertainment} alt={lang === 'es' ? 'Equipo de entretenimiento' : 'Entertainment team'} />
+            <img src={media.salsa} alt={lang === 'es' ? 'Espectáculo de salsa cubana en un resort' : 'Cuban salsa show at a resort'} />
           </div>
           <div className="careers__content">
             <h2>{t.careersTitle}</h2>
@@ -594,7 +598,10 @@ function App() {
             <address>
               <a href="tel:+34658273162">+34 658 27 31 62</a>
               <a href="mailto:info@gesiemes.com">info@gesiemes.com</a>
-              <span>Roger de Llúria, s/n<br />43840 Salou, Tarragona, España</span>
+              <a href={googleBusinessUrl} target="_blank" rel="noreferrer">
+                Carrer de Roger de Llúria, 15<br />43840 Salou, Tarragona, España
+              </a>
+              <span>{lang === 'es' ? 'L–V 09:00–18:00 · S 10:00–14:00' : 'Mon–Fri 09:00–18:00 · Sat 10:00–14:00'}</span>
             </address>
           </div>
           <form className="contact-form" onSubmit={(event) => handleSubmit(event, 'contact')}>
@@ -636,20 +643,37 @@ function App() {
         <div className="footer-brand">
           <img src={media.logo} alt="GESIEMES" />
           <p>{lang === 'es' ? 'Servicios profesionales para hoteles y resorts.' : 'Professional services for hotels and resorts.'}</p>
+          <a href="mailto:info@gesiemes.com">info@gesiemes.com</a>
         </div>
-        <div>
-          <h2>{t.imprint}</h2>
+        <div className="footer-business">
+          <h2>{lang === 'es' ? 'Ficha de empresa' : 'Business profile'}</h2>
           <address>
-            <strong>GESIEMES 2017, SL</strong>
+            <strong>Gesiemes 2017, S.L.</strong>
+            <span>{lang === 'es' ? 'Servicio de empresa a empresa' : 'Business-to-business service'}</span>
             <span>NIF B55704852</span>
-            <span>Roger de Llúria, s/n</span>
-            <span>43840 Salou, Tarragona, España</span>
+            <a href={googleBusinessUrl} target="_blank" rel="noreferrer">
+              Carrer de Roger de Llúria, 15<br />
+              43840 Salou, Tarragona
+            </a>
             <a href="tel:+34658273162">+34 658 27 31 62</a>
-            <a href="mailto:info@gesiemes.com">info@gesiemes.com</a>
+            <a href="https://www.gesiemes.com/" target="_blank" rel="noreferrer">gesiemes.com</a>
+            <a href={googleBusinessUrl} target="_blank" rel="noreferrer">
+              5,0 ★ · 7 {lang === 'es' ? 'reseñas en Google' : 'Google reviews'}
+            </a>
           </address>
         </div>
+        <div className="footer-hours">
+          <h2>{lang === 'es' ? 'Horario' : 'Hours'}</h2>
+          <span>{lang === 'es' ? 'Lunes–viernes' : 'Monday–Friday'} <strong>09:00–18:00</strong></span>
+          <span>{lang === 'es' ? 'Sábado' : 'Saturday'} <strong>10:00–14:00</strong></span>
+          <span>{lang === 'es' ? 'Domingo' : 'Sunday'} <strong>{lang === 'es' ? 'Cerrado' : 'Closed'}</strong></span>
+          <p>{lang === 'es' ? 'Servicios in situ · Citas online · Acceso adaptado' : 'On-site services · Online appointments · Accessible entrance'}</p>
+          <a href={googleBusinessUrl} target="_blank" rel="noreferrer">
+            {lang === 'es' ? 'Ver ficha y cómo llegar ↗' : 'View profile and directions ↗'}
+          </a>
+        </div>
         <div className="footer-links">
-          <h2>Legal</h2>
+          <h2>{t.imprint}</h2>
           <a href="https://www.gesiemes.com/aviso-legal/" target="_blank" rel="noreferrer">
             {lang === 'es' ? 'Aviso legal' : 'Legal notice'}
           </a>
