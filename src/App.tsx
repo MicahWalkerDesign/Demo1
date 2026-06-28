@@ -203,6 +203,17 @@ const routeMeta: Record<
   },
 };
 
+const media = {
+  logo: '/assets/gesiemes/logo.png',
+  pool: '/assets/gesiemes/swimming-pool.jpg',
+  poolAlt: '/assets/gesiemes/lifeguard-2.jpg',
+  lifeguard: '/assets/gesiemes/lifeguard-1.jpg',
+  hotel: '/assets/gesiemes/hotel.jpg',
+  magician: '/assets/gesiemes/magician.jpg',
+  contact: '/assets/gesiemes/contact.jpg',
+  coding: '/assets/gesiemes/coding-icon.jpg',
+} as const;
+
 function parseRoute(): Route {
   const hash = window.location.hash.replace(/^#/, '') || '/';
   const [path, queryString] = hash.split('?');
@@ -376,8 +387,32 @@ function HomeView({ lang }: { lang: Lang }) {
         </div>
 
         <div className="concept-hero__media">
-          <div className="concept-hero__cutout">
-            <img src="/assets/hero-pool.png" alt="" />
+          <div className="concept-hero__showcase">
+            <div className="concept-hero__showcase-main">
+              <img src={media.pool} alt="" />
+              <div className="concept-hero__glass concept-hero__glass--anchor">
+                <img src={media.logo} alt="" />
+                <strong>{lang === 'es' ? '28 hoteles en verano' : '28 summer hotels'}</strong>
+                <span>{lang === 'es' ? 'Socorristas, animación y entretenimiento' : 'Lifeguards, animation, and entertainment'}</span>
+              </div>
+            </div>
+            <div className="concept-hero__stack">
+              <article className="concept-hero__glass concept-hero__glass--photo">
+                <img src={media.lifeguard} alt="" />
+                <span>{lang === 'es' ? 'Cobertura segura' : 'Safe coverage'}</span>
+              </article>
+              <article className="concept-hero__glass concept-hero__glass--photo">
+                <img src={media.hotel} alt="" />
+                <span>{lang === 'es' ? 'Experiencia hotelera' : 'Hotel experience'}</span>
+              </article>
+              <article className="concept-hero__glass concept-hero__glass--label">
+                <img src={media.magician} alt="" />
+                <div>
+                  <strong>{lang === 'es' ? 'Entretenimiento' : 'Entertainment'}</strong>
+                  <span>{lang === 'es' ? 'Música, shows y equipos de animación' : 'Music, shows, and animation teams'}</span>
+                </div>
+              </article>
+            </div>
           </div>
         </div>
       </section>
@@ -416,9 +451,13 @@ function HomeView({ lang }: { lang: Lang }) {
               </div>
               <div className={`selector-card__preview selector-card__preview--${variant}`}>
                 {variant === 'portfolio' ? (
-                  <img src="/assets/hero-pool.png" alt="" />
+                  <>
+                    <img src={media.pool} alt="" />
+                    <div className="selector-card__preview-chip">{lang === 'es' ? 'Portfolio visual' : 'Visual portfolio'}</div>
+                  </>
                 ) : variant === 'internal' ? (
                   <>
+                    <img src={media.hotel} alt="" />
                     <div className="preview-sidebar" />
                     <div className="preview-grid">
                       <span />
@@ -426,11 +465,16 @@ function HomeView({ lang }: { lang: Lang }) {
                       <span />
                       <span />
                     </div>
+                    <div className="selector-card__preview-chip selector-card__preview-chip--dark">
+                      {lang === 'es' ? 'Herramientas internas' : 'Internal tools'}
+                    </div>
                   </>
                 ) : (
                   <>
+                    <img src={media.contact} alt="" />
                     <div className="preview-chart" />
                     <div className="preview-map" />
+                    <div className="selector-card__preview-chip">{lang === 'es' ? 'Captación comercial' : 'Commercial growth'}</div>
                   </>
                 )}
               </div>
@@ -484,6 +528,27 @@ function MockupView({ lang, variant }: { lang: Lang; variant: Variant }) {
   const t = copy[lang];
   const variantCopy = t.sections[variant];
   const meta = routeMeta[variant];
+  const stagePhotos: Record<Variant, { main: string; secondary: string; tertiary: string; badge: string }> = {
+    portfolio: {
+      main: media.pool,
+      secondary: media.lifeguard,
+      tertiary: media.magician,
+      badge: media.logo,
+    },
+    internal: {
+      main: media.hotel,
+      secondary: media.poolAlt,
+      tertiary: media.lifeguard,
+      badge: media.coding,
+    },
+    marketing: {
+      main: media.contact,
+      secondary: media.hotel,
+      tertiary: media.pool,
+      badge: media.magician,
+    },
+  };
+  const stage = stagePhotos[variant];
 
   return (
     <main className="mockup-page">
@@ -510,27 +575,40 @@ function MockupView({ lang, variant }: { lang: Lang; variant: Variant }) {
           </div>
         </div>
 
-        <div className="mockup-visual" style={{ ['--accent' as never]: meta.accent, ['--glow' as never]: meta.glow } as React.CSSProperties}>
+        <div
+          className="mockup-visual"
+          style={{ ['--accent' as never]: meta.accent, ['--glow' as never]: meta.glow } as React.CSSProperties}
+        >
           <div className="mockup-visual__top">
             <span>{t.panels.intro}</span>
             <span>{variant.toUpperCase()}</span>
           </div>
-          <div className="hero-art">
-            <div className="hero-art__band hero-art__band--left" style={{ background: meta.shape }} />
+          <div className={`hero-art hero-art--${variant}`}>
+            <div className="hero-art__rail" style={{ background: meta.shape }}>
+              <img src={stage.main} alt="" />
+            </div>
             <div className="hero-art__card hero-art__card--primary">
+              <div className="hero-art__eyebrow">{variant === 'portfolio' ? t.panels.intro : variant === 'internal' ? t.panels.support : t.panels.intro}</div>
               <div className="hero-art__title">{variantCopy.one}</div>
               <div className="hero-art__subtitle">{variantCopy.callout}</div>
-            </div>
-            <div className="hero-art__stack">
-              <div className="hero-art__mini">
+              <div className="hero-art__pill-row">
                 <span>{variantCopy.two}</span>
-              </div>
-              <div className="hero-art__mini">
                 <span>{variantCopy.three}</span>
               </div>
-              <div className="hero-art__mini">
+            </div>
+            <div className="hero-art__stack">
+              <article className="hero-art__mini hero-art__mini--photo">
+                <img src={stage.secondary} alt="" />
+                <span>{variantCopy.two}</span>
+              </article>
+              <article className="hero-art__mini hero-art__mini--photo">
+                <img src={stage.tertiary} alt="" />
+                <span>{variantCopy.three}</span>
+              </article>
+              <article className="hero-art__mini hero-art__mini--badge">
+                <img src={stage.badge} alt="" />
                 <span>{variantCopy.four}</span>
-              </div>
+              </article>
             </div>
           </div>
           <div className="mockup-visual__footer">
@@ -642,6 +720,7 @@ function PortfolioSections({ lang }: { lang: Lang }) {
           {[
             {
               title: lang === 'es' ? 'Socorristas' : 'Lifeguards',
+              image: media.lifeguard,
               body:
                 lang === 'es'
                   ? 'Supervisión, seguridad y cobertura de piscina con foco en confianza operativa.'
@@ -649,6 +728,7 @@ function PortfolioSections({ lang }: { lang: Lang }) {
             },
             {
               title: lang === 'es' ? 'Animación infantil' : 'Children animation',
+              image: media.magician,
               body:
                 lang === 'es'
                   ? 'Actividades familiares, juegos y mini clubs que activan la estancia.'
@@ -656,6 +736,7 @@ function PortfolioSections({ lang }: { lang: Lang }) {
             },
             {
               title: lang === 'es' ? 'Fitness de grupo' : 'Group fitness',
+              image: media.poolAlt,
               body:
                 lang === 'es'
                   ? 'Clases dinámicas, bienestar y energía durante toda la temporada.'
@@ -663,14 +744,18 @@ function PortfolioSections({ lang }: { lang: Lang }) {
             },
             {
               title: lang === 'es' ? 'Música y shows' : 'Music and shows',
+              image: media.contact,
               body:
                 lang === 'es'
                   ? 'Entretenimiento nocturno, equipos de animación y grupos para eventos.'
                   : 'Evening entertainment, animation teams, and groups for events.',
             },
-          ].map((item) => (
+          ].map((item, index) => (
             <article className="service-card" key={item.title}>
-              <span className="service-card__tag" />
+              <div className="service-card__media">
+                <img src={item.image} alt="" />
+                <span className="service-card__badge">{String(index + 1).padStart(2, '0')}</span>
+              </div>
               <h3>{item.title}</h3>
               <p>{item.body}</p>
             </article>
@@ -707,9 +792,12 @@ function PortfolioSections({ lang }: { lang: Lang }) {
             </ul>
           </div>
           <div className="coverage-map">
-            {['01', '07', '12', '18', '21', '28'].map((item) => (
-              <span key={item}>{item}</span>
-            ))}
+            <img src={media.pool} alt="" />
+            <div className="coverage-map__overlay">
+              {['01', '07', '12', '18', '21', '28'].map((item) => (
+                <span key={item}>{item}</span>
+              ))}
+            </div>
           </div>
           <div className="coverage-card coverage-card--stats">
             <div>
@@ -810,6 +898,14 @@ function InternalSections({ lang }: { lang: Lang }) {
             <button className="dashboard-nav__item">{lang === 'es' ? 'Formación' : 'Training'}</button>
           </aside>
           <div className="dashboard-main">
+            <div className="dashboard-main__hero">
+              <img src={media.hotel} alt="" />
+              <div className="dashboard-main__hero-card">
+                <span>{lang === 'es' ? 'Hoy' : 'Today'}</span>
+                <strong>{lang === 'es' ? 'Equipo cubierto' : 'Coverage ready'}</strong>
+                <p>{lang === 'es' ? 'Bloque interno para ver turnos y avisos en un vistazo.' : 'Internal block to see shifts and notices at a glance.'}</p>
+              </div>
+            </div>
             <div className="dashboard-metrics">
               {[
                 [lang === 'es' ? 'Hotel activos' : 'Active hotels', '28'],
@@ -836,6 +932,11 @@ function InternalSections({ lang }: { lang: Lang }) {
                   <span>{end}</span>
                 </div>
               ))}
+            </div>
+            <div className="dashboard-main__gallery">
+              <img src={media.lifeguard} alt="" />
+              <img src={media.poolAlt} alt="" />
+              <img src={media.coding} alt="" />
             </div>
           </div>
         </div>
@@ -866,6 +967,7 @@ function InternalSections({ lang }: { lang: Lang }) {
                   ? 'Acceso rápido para que el equipo abra, revise y entregue el servicio con el mismo estándar.'
                   : 'Quick access so the team can open, review, and deliver the service to the same standard.'}
               </p>
+              <img src={index % 2 === 0 ? media.lifeguard : media.hotel} alt="" />
             </article>
           ))}
         </div>
@@ -931,18 +1033,22 @@ function MarketingSections({ lang }: { lang: Lang }) {
             {
               region: 'Costa',
               value: lang === 'es' ? 'Hoteles de playa y resorts' : 'Beach hotels and resorts',
+              image: media.pool,
             },
             {
               region: 'Interior',
               value: lang === 'es' ? 'Programas familiares y de relax' : 'Family and relaxation programs',
+              image: media.hotel,
             },
             {
               region: 'Islas',
               value: lang === 'es' ? 'Cobertura alta en temporada' : 'High seasonal coverage',
+              image: media.lifeguard,
             },
           ].map((item) => (
             <article className="region-card" key={item.region}>
               <span>{item.region}</span>
+              <img src={item.image} alt="" />
               <h3>{item.value}</h3>
               <p>
                 {lang === 'es'
@@ -966,11 +1072,12 @@ function MarketingSections({ lang }: { lang: Lang }) {
       >
         <div className="case-grid">
           {[
-            [lang === 'es' ? 'Un hotel, tres servicios' : 'One hotel, three services', '28% +'],
-            [lang === 'es' ? 'Estrategia por temporada' : 'Seasonal strategy', '12 semanas'],
-            [lang === 'es' ? 'Recontratación' : 'Rebooking', '92%'],
-          ].map(([title, metric]) => (
+            [lang === 'es' ? 'Un hotel, tres servicios' : 'One hotel, three services', '28% +', media.hotel],
+            [lang === 'es' ? 'Estrategia por temporada' : 'Seasonal strategy', '12 semanas', media.pool],
+            [lang === 'es' ? 'Recontratación' : 'Rebooking', '92%', media.contact],
+          ].map(([title, metric, image]) => (
             <article className="case-card" key={title}>
+              <img src={image as string} alt="" />
               <div className="case-card__metric">{metric}</div>
               <h3>{title}</h3>
               <p>
@@ -994,6 +1101,7 @@ function MarketingSections({ lang }: { lang: Lang }) {
       >
         <div className="contact-panel">
           <div className="contact-copy">
+            <img src={media.contact} alt="" />
             <strong>{lang === 'es' ? 'Solicita propuesta' : 'Request a proposal'}</strong>
             <p>
               {lang === 'es'
@@ -1005,6 +1113,9 @@ function MarketingSections({ lang }: { lang: Lang }) {
             </button>
           </div>
           <div className="contact-form">
+            <div className="contact-form__art">
+              <img src={media.magician} alt="" />
+            </div>
             <div className="form-row">
               <span>{lang === 'es' ? 'Nombre del hotel' : 'Hotel name'}</span>
             </div>
