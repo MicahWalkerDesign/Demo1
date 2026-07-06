@@ -54,20 +54,20 @@ const content = {
     aboutTitle: 'Personas preparadas. Hoteles mejor atendidos.',
     aboutBody:
       'GESIEMES proporciona personal cualificado y servicios para hoteles, resorts, complejos turísticos y centros de ocio. Más de 15 años de experiencia respaldan una forma de trabajar cercana, flexible y orientada al huésped.',
-    quoteTitle: 'Lo que una buena colaboración debe sentirse',
-    quoteNote: 'Ejemplos de valoración para sustituir por testimonios verificados del cliente.',
+    quoteTitle: 'Así se siente una buena colaboración',
+    quoteNote: '5,0 en Google · 7 reseñas',
     quotes: [
       [
-        '“Durante la temporada necesitamos respuestas rápidas. Tener una persona de contacto y los turnos bien definidos nos da mucha tranquilidad.”',
-        'Dirección de hotel',
+        '“El equipo de socorristas fue increíble. Su paciencia, educación y amabilidad con niños y adultos hicieron las vacaciones mucho más divertidas.”',
+        'Oiane O. · Google · Mojácar',
       ],
       [
-        '“El equipo se integró con recepción y mantenimiento desde el primer día. Cuando cambió la ocupación, reorganizamos la cobertura sin complicaciones.”',
-        'Responsable de operaciones',
+        '“Nos costaba salir del hotel para hacer excursiones porque los niños querían participar en todas las actividades. Muchas gracias.”',
+        'Ana S. · Google · Vera',
       ],
       [
-        '“Las actividades tienen ritmo, pero también se adaptan a cada familia. Los huéspedes saben qué ocurre y el equipo del hotel no tiene que perseguir información.”',
-        'Resort familiar · Costa Daurada',
+        '“Son geniales. Maite está al frente, entregada a su trabajo y siempre intentando que todo salga bien.”',
+        'Alberto M. · Google',
       ],
     ],
     customTitle: '¿Tienes algo diferente en mente?',
@@ -124,19 +124,19 @@ const content = {
     aboutBody:
       'GESIEMES provides qualified staff and services for hotels, resorts, tourism complexes, and leisure centres. More than 15 years of experience support a close, flexible, guest-focused way of working.',
     quoteTitle: 'What a strong partnership should feel like',
-    quoteNote: 'Sample review copy to replace with verified client testimonials.',
+    quoteNote: '5.0 on Google · 7 reviews',
     quotes: [
       [
-        '“During the season we need quick answers. Having one point of contact and clearly defined shifts gives us real peace of mind.”',
-        'Hotel management',
+        '“The lifeguard team was incredible. Their patience, courtesy, and kindness with children and adults made the holiday much more fun.”',
+        'Oiane O. · Google · Mojácar',
       ],
       [
-        '“The team integrated with reception and maintenance from day one. When occupancy changed, we reorganised coverage without complications.”',
-        'Operations manager',
+        '“It was hard to leave the hotel for excursions because the children wanted to join every activity. Thank you so much.”',
+        'Ana S. · Google · Vera',
       ],
       [
-        '“Activities have energy but still adapt to each family. Guests know what is happening, and our hotel team does not have to chase information.”',
-        'Family resort · Costa Daurada',
+        '“They are wonderful. Maite leads the team with real dedication and always tries to make sure everything goes well.”',
+        'Alberto M. · Google',
       ],
     ],
     customTitle: 'Have something different in mind?',
@@ -285,6 +285,33 @@ function App() {
         : 'GESIEMES | Services for hotels and resorts';
   }, [lang]);
 
+  useEffect(() => {
+    const revealTargets = document.querySelectorAll<HTMLElement>(
+      '.proof-strip, .section-heading, .service-item, .coverage__photo, .coverage__process, .coverage__modes, .about__image, .about__copy, .review-grid blockquote, .custom-request__glass, .careers__image, .careers__content, .contact__copy, .contact-form',
+    );
+
+    if (!('IntersectionObserver' in window)) {
+      revealTargets.forEach((target) => target.classList.add('is-visible'));
+      return;
+    }
+
+    revealTargets.forEach((target) => target.classList.add('reveal'));
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { rootMargin: '0px 0px -8% 0px', threshold: 0.08 },
+    );
+
+    revealTargets.forEach((target) => observer.observe(target));
+    return () => observer.disconnect();
+  }, [lang]);
+
   const navTargets = ['services', 'coverage', 'about', 'careers', 'contact'];
   const handleSubmit = (event: FormEvent<HTMLFormElement>, type: 'contact' | 'career') => {
     event.preventDefault();
@@ -296,7 +323,7 @@ function App() {
     <div className="site-shell">
       <header className="site-header">
         <button className="brand" type="button" onClick={() => scrollToId('top')} aria-label="GESIEMES">
-          <img src={media.logo} alt="GESIEMES" />
+          <img src={media.logo} alt="GESIEMES" width="1270" height="574" decoding="async" />
         </button>
 
         <nav className="desktop-nav" aria-label={lang === 'es' ? 'Navegación principal' : 'Main navigation'}>
@@ -362,7 +389,14 @@ function App() {
 
       <main id="top">
         <section className="hero">
-          <img className="hero__image" src={media.pool} alt={lang === 'es' ? 'Piscina de un resort junto al mar' : 'Seaside resort pool'} />
+          <img
+            className="hero__image"
+            src={media.pool}
+            alt={lang === 'es' ? 'Piscina de un resort junto al mar' : 'Seaside resort pool'}
+            width="1920"
+            height="1079"
+            decoding="async"
+          />
           <div className="hero__shade" />
           <div className="hero__content">
             <h1>{t.heroTitle}</h1>
@@ -398,7 +432,7 @@ function App() {
             {services.map((service, index) => (
               <details className="service-item" key={service.title} open={index === 0}>
                 <summary>
-                  <img src={service.image} alt="" />
+                  <img src={service.image} alt="" loading="lazy" decoding="async" />
                   <span className="service-item__number">{String(index + 1).padStart(2, '0')}</span>
                   <span className="service-item__summary">
                     <strong>{service.title}</strong>
@@ -408,7 +442,7 @@ function App() {
                 </summary>
                 <div className="service-item__content">
                   <div className="service-item__media">
-                    <img src={service.image} alt={service.title} />
+                    <img src={service.image} alt={service.title} loading="lazy" decoding="async" />
                   </div>
                   <div className="service-item__details">
                     <p>{service.intro}</p>
@@ -434,7 +468,12 @@ function App() {
               <p>{t.coverageBody}</p>
             </div>
             <div className="coverage__photo">
-              <img src={media.hotel} alt={lang === 'es' ? 'Hotel atendido durante la temporada' : 'Hotel served during the season'} />
+              <img
+                src={media.hotel}
+                alt={lang === 'es' ? 'Hotel atendido durante la temporada' : 'Hotel served during the season'}
+                loading="lazy"
+                decoding="async"
+              />
               <div className="coverage__photo-stat">
                 <strong>28</strong>
                 <span>{t.proofHotels}</span>
@@ -476,7 +515,12 @@ function App() {
 
         <section className="about section" id="about">
           <div className="about__image">
-            <img src={media.lifeguardAlt} alt={lang === 'es' ? 'Profesional de GESIEMES en una piscina' : 'GESIEMES pool professional'} />
+            <img
+              src={media.lifeguardAlt}
+              alt={lang === 'es' ? 'Profesional de GESIEMES en una piscina' : 'GESIEMES pool professional'}
+              loading="lazy"
+              decoding="async"
+            />
           </div>
           <div className="about__copy">
             <h2>{t.aboutTitle}</h2>
@@ -498,6 +542,9 @@ function App() {
           <div className="section-heading">
             <h2>{t.quoteTitle}</h2>
             <p className="sample-note">{t.quoteNote}</p>
+            <a className="review-link" href={googleBusinessUrl} target="_blank" rel="noreferrer">
+              {lang === 'es' ? 'Ver reseñas en Google ↗' : 'View Google reviews ↗'}
+            </a>
           </div>
           <div className="review-grid">
             {t.quotes.map(([quote, author]) => (
@@ -510,7 +557,7 @@ function App() {
         </section>
 
         <section className="custom-request section">
-          <img src={media.contact} alt="" />
+          <img src={media.contact} alt="" loading="lazy" decoding="async" />
           <div className="custom-request__glass">
             <div>
               <h2>{t.customTitle}</h2>
@@ -524,7 +571,12 @@ function App() {
 
         <section className="careers section" id="careers">
           <div className="careers__image">
-            <img src={media.salsa} alt={lang === 'es' ? 'Espectáculo de salsa cubana en un resort' : 'Cuban salsa show at a resort'} />
+            <img
+              src={media.salsa}
+              alt={lang === 'es' ? 'Espectáculo de salsa cubana en un resort' : 'Cuban salsa show at a resort'}
+              loading="lazy"
+              decoding="async"
+            />
           </div>
           <div className="careers__content">
             <h2>{t.careersTitle}</h2>
@@ -641,7 +693,7 @@ function App() {
 
       <footer className="site-footer">
         <div className="footer-brand">
-          <img src={media.logo} alt="GESIEMES" />
+          <img src={media.logo} alt="GESIEMES" width="1270" height="574" loading="lazy" decoding="async" />
           <p>{lang === 'es' ? 'Servicios profesionales para hoteles y resorts.' : 'Professional services for hotels and resorts.'}</p>
           <a href="mailto:info@gesiemes.com">info@gesiemes.com</a>
         </div>
